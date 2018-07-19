@@ -4,18 +4,15 @@ import handleCheckoutMutation from './handle-checkout-mutation';
 
 // GraphQL
 import checkoutNodeQuery from './graphql/checkoutNodeQuery.graphql';
+import checkoutNodeQueryWithAddress from './graphql/checkoutNodeQueryWithAddress.graphql';
 import checkoutCreateMutation from './graphql/checkoutCreateMutation.graphql';
 import checkoutLineItemsAddMutation from './graphql/checkoutLineItemsAddMutation.graphql';
 import checkoutLineItemsRemoveMutation from './graphql/checkoutLineItemsRemoveMutation.graphql';
 import checkoutLineItemsReplaceMutation from './graphql/checkoutLineItemsReplaceMutation.graphql';
 import checkoutLineItemsUpdateMutation from './graphql/checkoutLineItemsUpdateMutation.graphql';
-import checkoutAttributesUpdateV2Mutation from './graphql/checkoutAttributesUpdateV2Mutation.graphql';
-import checkoutDiscountCodeApplyV2Mutation from './graphql/checkoutDiscountCodeApplyV2Mutation.graphql';
-import checkoutDiscountCodeRemoveMutation from './graphql/checkoutDiscountCodeRemoveMutation.graphql';
-import checkoutGiftCardsAppendMutation from './graphql/checkoutGiftCardsAppendMutation.graphql';
-import checkoutGiftCardRemoveV2Mutation from './graphql/checkoutGiftCardRemoveV2Mutation.graphql';
-import checkoutEmailUpdateV2Mutation from './graphql/checkoutEmailUpdateV2Mutation.graphql';
-import checkoutShippingAddressUpdateV2Mutation from './graphql/checkoutShippingAddressUpdateV2Mutation.graphql';
+import checkoutAttributesUpdateMutation from './graphql/checkoutAttributesUpdateMutation.graphql';
+import checkoutDiscountCodeApplyMutation from './graphql/checkoutDiscountCodeApplyMutation.graphql';
+import checkoutShippingAddressUpdateMutation from './graphql/checkoutShippingAddressUpdateMutation.graphql';
 
 /**
  * The JS Buy SDK checkout resource
@@ -41,6 +38,30 @@ class CheckoutResource extends Resource {
       .then((checkout) => {
         if (!checkout) { return null; }
 
+        return this.graphQLClient.fetchAllPages(checkout.lineItems, {pageSize: 250}).then((lineItems) => {
+          checkout.attrs.lineItems = lineItems;
+
+          return checkout;
+        });
+      });
+  }
+
+  /**
+   * Fetches a checkout by ID.
+   *
+   * @example
+   * client.checkout.fetch('FlZj9rZXlN5MDY4ZDFiZTUyZTUwNTE2MDNhZjg=').then((checkout) => {
+   *   // Do something with the checkout
+   * });
+   *
+   * @param {String} id The id of the checkout to fetch.
+   * @return {Promise|GraphModel} A promise resolving with a `GraphModel` of the checkout.
+   */
+  fetchWithAddress(id) {
+    return this.graphQLClient
+      .send(checkoutNodeQueryWithAddress, {id})
+      .then(defaultResolver('node'))
+      .then((checkout) => {
         return this.graphQLClient.fetchAllPages(checkout.lineItems, {pageSize: 250}).then((lineItems) => {
           checkout.attrs.lineItems = lineItems;
 
@@ -302,7 +323,7 @@ class CheckoutResource extends Resource {
    * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
    * const shippingAddress = {
    *    address1: 'Chestnut Street 92',
-   *    address2: 'Apartment 2',
+   *    address2: 'Apartment 2"',
    *    city: 'Louisville',
    *    company: null,
    *    country: 'United States',
@@ -312,6 +333,7 @@ class CheckoutResource extends Resource {
    *    province: 'Kentucky',
    *    zip: '40202'
    *  };
+   *
    *
    * client.checkout.updateShippingAddress(checkoutId, shippingAddress).then(checkout => {
    *   // Do something with the updated checkout
@@ -323,8 +345,8 @@ class CheckoutResource extends Resource {
    */
   updateShippingAddress(checkoutId, shippingAddress) {
     return this.graphQLClient
-      .send(checkoutShippingAddressUpdateV2Mutation, {checkoutId, shippingAddress})
-      .then(handleCheckoutMutation('checkoutShippingAddressUpdateV2', this.graphQLClient));
+      .send(checkoutShippingAddressUpdateMutation, {checkoutId, shippingAddress})
+      .then(handleCheckoutMutation('checkoutShippingAddressUpdate', this.graphQLClient));
   }
 }
 

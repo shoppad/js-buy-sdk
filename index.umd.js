@@ -3759,6 +3759,162 @@ function query$12(client) {
   var spreads = {};
   var variables = {};
   variables.__defaultOperation__ = {};
+  variables.__defaultOperation__.id = client.variable("id", "ID!");
+  spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
+    root.add("id");
+    root.add("title");
+    root.add("price");
+    root.add("weight");
+    root.add("available");
+    root.add("sku");
+    root.add("compareAtPrice");
+    root.add("image", function (image) {
+      image.add("id");
+      image.add("src");
+      image.add("altText");
+    });
+    root.add("selectedOptions", function (selectedOptions) {
+      selectedOptions.add("name");
+      selectedOptions.add("value");
+    });
+  });
+  spreads.VariantWithProductFragment = document.defineFragment("VariantWithProductFragment", "ProductVariant", function (root) {
+    root.addFragment(spreads.VariantFragment);
+    root.add("product", function (product) {
+      product.add("id");
+    });
+  });
+  spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
+    root.add("id");
+    root.add("address1");
+    root.add("address2");
+    root.add("city");
+    root.add("company");
+    root.add("country");
+    root.add("firstName");
+    root.add("formatted");
+    root.add("lastName");
+    root.add("latitude");
+    root.add("longitude");
+    root.add("phone");
+    root.add("province");
+    root.add("zip");
+    root.add("name");
+    root.add("countryCode");
+    root.add("provinceCode");
+  });
+  spreads.CheckoutWithAddressFragment = document.defineFragment("CheckoutWithAddressFragment", "Checkout", function (root) {
+    root.add("id");
+    root.add("ready");
+    root.add("availableShippingRates");
+    root.add("requiresShipping");
+    root.add("note");
+    root.add("paymentDue");
+    root.add("webUrl");
+    root.add("orderStatusUrl");
+    root.add("taxExempt");
+    root.add("taxesIncluded");
+    root.add("currencyCode");
+    root.add("totalTax");
+    root.add("subtotalPrice");
+    root.add("totalPrice");
+    root.add("completedAt");
+    root.add("createdAt");
+    root.add("updatedAt");
+    root.add("shippingAddress", function (shippingAddress) {
+      shippingAddress.addFragment(spreads.MailingAddressFragment);
+    });
+    root.add("shippingLine", function (shippingLine) {
+      shippingLine.add("handle");
+      shippingLine.add("price");
+      shippingLine.add("title");
+    });
+    root.add("customAttributes", function (customAttributes) {
+      customAttributes.add("key");
+      customAttributes.add("value");
+    });
+    root.add("order", function (order) {
+      order.add("id");
+      order.add("processedAt");
+      order.add("orderNumber");
+      order.add("subtotalPrice");
+      order.add("totalShippingPrice");
+      order.add("totalTax");
+      order.add("totalPrice");
+      order.add("currencyCode");
+      order.add("totalRefunded");
+      order.add("customerUrl");
+      order.add("shippingAddress", function (shippingAddress) {
+        shippingAddress.addFragment(spreads.MailingAddressFragment);
+      });
+      order.add("lineItems", {
+        args: {
+          first: 250
+        }
+      }, function (lineItems) {
+        lineItems.add("pageInfo", function (pageInfo) {
+          pageInfo.add("hasNextPage");
+          pageInfo.add("hasPreviousPage");
+        });
+        lineItems.add("edges", function (edges) {
+          edges.add("cursor");
+          edges.add("node", function (node) {
+            node.add("title");
+            node.add("variant", function (variant) {
+              variant.addFragment(spreads.VariantWithProductFragment);
+            });
+            node.add("quantity");
+            node.add("customAttributes", function (customAttributes) {
+              customAttributes.add("key");
+              customAttributes.add("value");
+            });
+          });
+        });
+      });
+    });
+    root.add("lineItems", {
+      args: {
+        first: 250
+      }
+    }, function (lineItems) {
+      lineItems.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      lineItems.add("edges", function (edges) {
+        edges.add("cursor");
+        edges.add("node", function (node) {
+          node.add("id");
+          node.add("title");
+          node.add("variant", function (variant) {
+            variant.addFragment(spreads.VariantWithProductFragment);
+          });
+          node.add("quantity");
+          node.add("customAttributes", function (customAttributes) {
+            customAttributes.add("key");
+            customAttributes.add("value");
+          });
+        });
+      });
+    });
+  });
+  document.addQuery([variables.__defaultOperation__.id], function (root) {
+    root.add("node", {
+      args: {
+        id: variables.__defaultOperation__.id
+      }
+    }, function (node) {
+      node.addFragment(spreads.CheckoutWithAddressFragment);
+    });
+  });
+  return document;
+}
+
+function query$13(client) {
+  var document = client.document();
+  var spreads = {};
+  var variables = {};
+  variables.__defaultOperation__ = {};
   variables.__defaultOperation__.input = client.variable("input", "CheckoutCreateInput!");
   spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
     root.add("id");
@@ -3918,7 +4074,7 @@ function query$12(client) {
   return document;
 }
 
-function query$13(client) {
+function query$14(client) {
   var document = client.document();
   var spreads = {};
   var variables = {};
@@ -4084,7 +4240,7 @@ function query$13(client) {
   return document;
 }
 
-function query$14(client) {
+function query$15(client) {
   var document = client.document();
   var spreads = {};
   var variables = {};
@@ -4250,7 +4406,7 @@ function query$14(client) {
   return document;
 }
 
-function query$15(client) {
+function query$16(client) {
   var document = client.document();
   var spreads = {};
   var variables = {};
@@ -4416,7 +4572,7 @@ function query$15(client) {
   return document;
 }
 
-function query$16(client) {
+function query$17(client) {
   var document = client.document();
   var spreads = {};
   var variables = {};
@@ -4582,7 +4738,7 @@ function query$16(client) {
   return document;
 }
 
-function query$17(client) {
+function query$18(client) {
   var document = client.document();
   var spreads = {};
   var variables = {};
@@ -4748,6 +4904,172 @@ function query$17(client) {
   return document;
 }
 
+function query$19(client) {
+  var document = client.document();
+  var spreads = {};
+  var variables = {};
+  variables.checkoutShippingAddressUpdate = {};
+  variables.checkoutShippingAddressUpdate.shippingAddress = client.variable("shippingAddress", "MailingAddressInput!");
+  variables.checkoutShippingAddressUpdate.checkoutId = client.variable("checkoutId", "ID!");
+  spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
+    root.add("id");
+    root.add("title");
+    root.add("price");
+    root.add("weight");
+    root.add("available");
+    root.add("sku");
+    root.add("compareAtPrice");
+    root.add("image", function (image) {
+      image.add("id");
+      image.add("src");
+      image.add("altText");
+    });
+    root.add("selectedOptions", function (selectedOptions) {
+      selectedOptions.add("name");
+      selectedOptions.add("value");
+    });
+  });
+  spreads.VariantWithProductFragment = document.defineFragment("VariantWithProductFragment", "ProductVariant", function (root) {
+    root.addFragment(spreads.VariantFragment);
+    root.add("product", function (product) {
+      product.add("id");
+    });
+  });
+  spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
+    root.add("field");
+    root.add("message");
+  });
+  spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
+    root.add("id");
+    root.add("address1");
+    root.add("address2");
+    root.add("city");
+    root.add("company");
+    root.add("country");
+    root.add("firstName");
+    root.add("formatted");
+    root.add("lastName");
+    root.add("latitude");
+    root.add("longitude");
+    root.add("phone");
+    root.add("province");
+    root.add("zip");
+    root.add("name");
+    root.add("countryCode");
+    root.add("provinceCode");
+  });
+  spreads.CheckoutFragment = document.defineFragment("CheckoutFragment", "Checkout", function (root) {
+    root.add("id");
+    root.add("ready");
+    root.add("requiresShipping");
+    root.add("note");
+    root.add("paymentDue");
+    root.add("webUrl");
+    root.add("orderStatusUrl");
+    root.add("taxExempt");
+    root.add("taxesIncluded");
+    root.add("currencyCode");
+    root.add("totalTax");
+    root.add("subtotalPrice");
+    root.add("totalPrice");
+    root.add("completedAt");
+    root.add("createdAt");
+    root.add("updatedAt");
+    root.add("shippingAddress", function (shippingAddress) {
+      shippingAddress.addFragment(spreads.MailingAddressFragment);
+    });
+    root.add("shippingLine", function (shippingLine) {
+      shippingLine.add("handle");
+      shippingLine.add("price");
+      shippingLine.add("title");
+    });
+    root.add("customAttributes", function (customAttributes) {
+      customAttributes.add("key");
+      customAttributes.add("value");
+    });
+    root.add("order", function (order) {
+      order.add("id");
+      order.add("processedAt");
+      order.add("orderNumber");
+      order.add("subtotalPrice");
+      order.add("totalShippingPrice");
+      order.add("totalTax");
+      order.add("totalPrice");
+      order.add("currencyCode");
+      order.add("totalRefunded");
+      order.add("customerUrl");
+      order.add("shippingAddress", function (shippingAddress) {
+        shippingAddress.addFragment(spreads.MailingAddressFragment);
+      });
+      order.add("lineItems", {
+        args: {
+          first: 250
+        }
+      }, function (lineItems) {
+        lineItems.add("pageInfo", function (pageInfo) {
+          pageInfo.add("hasNextPage");
+          pageInfo.add("hasPreviousPage");
+        });
+        lineItems.add("edges", function (edges) {
+          edges.add("cursor");
+          edges.add("node", function (node) {
+            node.add("title");
+            node.add("variant", function (variant) {
+              variant.addFragment(spreads.VariantWithProductFragment);
+            });
+            node.add("quantity");
+            node.add("customAttributes", function (customAttributes) {
+              customAttributes.add("key");
+              customAttributes.add("value");
+            });
+          });
+        });
+      });
+    });
+    root.add("lineItems", {
+      args: {
+        first: 250
+      }
+    }, function (lineItems) {
+      lineItems.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      lineItems.add("edges", function (edges) {
+        edges.add("cursor");
+        edges.add("node", function (node) {
+          node.add("id");
+          node.add("title");
+          node.add("variant", function (variant) {
+            variant.addFragment(spreads.VariantWithProductFragment);
+          });
+          node.add("quantity");
+          node.add("customAttributes", function (customAttributes) {
+            customAttributes.add("key");
+            customAttributes.add("value");
+          });
+        });
+      });
+    });
+  });
+  document.addMutation("checkoutShippingAddressUpdate", [variables.checkoutShippingAddressUpdate.shippingAddress, variables.checkoutShippingAddressUpdate.checkoutId], function (root) {
+    root.add("checkoutShippingAddressUpdate", {
+      args: {
+        shippingAddress: variables.checkoutShippingAddressUpdate.shippingAddress,
+        checkoutId: variables.checkoutShippingAddressUpdate.checkoutId
+      }
+    }, function (checkoutShippingAddressUpdate) {
+      checkoutShippingAddressUpdate.add("userErrors", function (userErrors) {
+        userErrors.addFragment(spreads.UserErrorFragment);
+      });
+      checkoutShippingAddressUpdate.add("checkout", function (checkout) {
+        checkout.addFragment(spreads.CheckoutFragment);
+      });
+    });
+  });
+  return document;
+}
+
 // GraphQL
 /**
  * The JS Buy SDK checkout resource
@@ -4790,6 +5112,32 @@ var CheckoutResource = function (_Resource) {
     }
 
     /**
+     * Fetches a checkout by ID.
+     *
+     * @example
+     * client.checkout.fetch('FlZj9rZXlN5MDY4ZDFiZTUyZTUwNTE2MDNhZjg=').then((checkout) => {
+     *   // Do something with the checkout
+     * });
+     *
+     * @param {String} id The id of the checkout to fetch.
+     * @return {Promise|GraphModel} A promise resolving with a `GraphModel` of the checkout.
+     */
+
+  }, {
+    key: 'fetchWithAddress',
+    value: function fetchWithAddress(id) {
+      var _this3 = this;
+
+      return this.graphQLClient.send(query$12, { id: id }).then(defaultResolver('node')).then(function (checkout) {
+        return _this3.graphQLClient.fetchAllPages(checkout.lineItems, { pageSize: 250 }).then(function (lineItems) {
+          checkout.attrs.lineItems = lineItems;
+
+          return checkout;
+        });
+      });
+    }
+
+    /**
      * Creates a checkout.
      *
      * @example
@@ -4817,7 +5165,7 @@ var CheckoutResource = function (_Resource) {
     value: function create() {
       var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      return this.graphQLClient.send(query$12, { input: input }).then(handleCheckoutMutation('checkoutCreate', this.graphQLClient));
+      return this.graphQLClient.send(query$13, { input: input }).then(handleCheckoutMutation('checkoutCreate', this.graphQLClient));
     }
 
     /**
@@ -4844,7 +5192,7 @@ var CheckoutResource = function (_Resource) {
     value: function updateAttributes(checkoutId) {
       var input = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      return this.graphQLClient.send(query$16, { checkoutId: checkoutId, input: input }).then(handleCheckoutMutation('checkoutAttributesUpdate', this.graphQLClient));
+      return this.graphQLClient.send(query$17, { checkoutId: checkoutId, input: input }).then(handleCheckoutMutation('checkoutAttributesUpdate', this.graphQLClient));
     }
 
     /**
@@ -4866,7 +5214,7 @@ var CheckoutResource = function (_Resource) {
   }, {
     key: 'addLineItems',
     value: function addLineItems(checkoutId, lineItems) {
-      return this.graphQLClient.send(query$13, { checkoutId: checkoutId, lineItems: lineItems }).then(handleCheckoutMutation('checkoutLineItemsAdd', this.graphQLClient));
+      return this.graphQLClient.send(query$14, { checkoutId: checkoutId, lineItems: lineItems }).then(handleCheckoutMutation('checkoutLineItemsAdd', this.graphQLClient));
     }
 
     /**
@@ -4888,7 +5236,7 @@ var CheckoutResource = function (_Resource) {
   }, {
     key: 'addDiscount',
     value: function addDiscount(checkoutId, discountCode) {
-      return this.graphQLClient.send(query$17, { checkoutId: checkoutId, discountCode: discountCode }).then(handleCheckoutMutation('checkoutDiscountCodeApply', this.graphQLClient));
+      return this.graphQLClient.send(query$18, { checkoutId: checkoutId, discountCode: discountCode }).then(handleCheckoutMutation('checkoutDiscountCodeApply', this.graphQLClient));
     }
 
     /**
@@ -4910,7 +5258,7 @@ var CheckoutResource = function (_Resource) {
   }, {
     key: 'removeLineItems',
     value: function removeLineItems(checkoutId, lineItemIds) {
-      return this.graphQLClient.send(query$14, { checkoutId: checkoutId, lineItemIds: lineItemIds }).then(handleCheckoutMutation('checkoutLineItemsRemove', this.graphQLClient));
+      return this.graphQLClient.send(query$15, { checkoutId: checkoutId, lineItemIds: lineItemIds }).then(handleCheckoutMutation('checkoutLineItemsRemove', this.graphQLClient));
     }
 
     /**
@@ -4938,7 +5286,41 @@ var CheckoutResource = function (_Resource) {
   }, {
     key: 'updateLineItems',
     value: function updateLineItems(checkoutId, lineItems) {
-      return this.graphQLClient.send(query$15, { checkoutId: checkoutId, lineItems: lineItems }).then(handleCheckoutMutation('checkoutLineItemsUpdate', this.graphQLClient));
+      return this.graphQLClient.send(query$16, { checkoutId: checkoutId, lineItems: lineItems }).then(handleCheckoutMutation('checkoutLineItemsUpdate', this.graphQLClient));
+    }
+
+    /**
+     * Updates shipping address on an existing checkout.
+     *
+     * @example
+     * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+     * const shippingAddress = {
+     *    address1: 'Chestnut Street 92',
+     *    address2: 'Apartment 2"',
+     *    city: 'Louisville',
+     *    company: null,
+     *    country: 'United States',
+     *    firstName: 'Bob',
+     *    lastName: 'Norman',
+     *    phone: '555-625-1199',
+     *    province: 'Kentucky',
+     *    zip: '40202'
+     *  };
+     *
+     *
+     * client.checkout.updateShippingAddress(checkoutId, shippingAddress).then(checkout => {
+     *   // Do something with the updated checkout
+     * });
+     *
+     * @param  {String} checkoutId The ID of the checkout to update shipping address.
+     * @param  {Object} shippingAddress A shipping address.
+     * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+     */
+
+  }, {
+    key: 'updateShippingAddress',
+    value: function updateShippingAddress(checkoutId, shippingAddress) {
+      return this.graphQLClient.send(query$19, { checkoutId: checkoutId, shippingAddress: shippingAddress }).then(handleCheckoutMutation('checkoutShippingAddressUpdate', this.graphQLClient));
     }
   }]);
   return CheckoutResource;
@@ -5393,7 +5775,8 @@ var Mutation$1 = {
     "checkoutLineItemsAdd": "CheckoutLineItemsAddPayload",
     "checkoutDiscountCodeApply": "CheckoutLineItemsAddPayload",
     "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
-    "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload"
+    "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
+    "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload"
   },
   "implementsNode": false,
   "relayInputObjectBaseTypes": {
@@ -5430,6 +5813,7 @@ var Checkout = {
   "name": "Checkout",
   "kind": "OBJECT",
   "fieldBaseTypes": {
+    "availableShippingRates": "AvailableShippingRates",
     "completedAt": "DateTime",
     "createdAt": "DateTime",
     "currencyCode": "CurrencyCode",
@@ -5499,6 +5883,13 @@ var ShippingRate = {
   "implementsNode": false
 };
 
+var AvailableShippingRates = {
+  "name": "AvailableShippingRates",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {},
+  "implementsNode": false
+};
+
 var CheckoutCreatePayload = {
   "name": "CheckoutCreatePayload",
   "kind": "OBJECT",
@@ -5531,6 +5922,16 @@ var CheckoutLineItemsRemovePayload = {
 
 var CheckoutLineItemsUpdatePayload = {
   "name": "CheckoutLineItemsUpdatePayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutShippingAddressUpdatePayload = {
+  "name": "CheckoutShippingAddressUpdatePayload",
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "checkout": "Checkout",
@@ -5586,10 +5987,12 @@ Types.types["CheckoutLineItemConnection"] = CheckoutLineItemConnection;
 Types.types["CheckoutLineItemEdge"] = CheckoutLineItemEdge;
 Types.types["CheckoutLineItem"] = CheckoutLineItem;
 Types.types["ShippingRate"] = ShippingRate;
+Types.types["AvailableShippingRates"] = AvailableShippingRates;
 Types.types["CheckoutCreatePayload"] = CheckoutCreatePayload;
 Types.types["CheckoutLineItemsAddPayload"] = CheckoutLineItemsAddPayload;
 Types.types["CheckoutLineItemsRemovePayload"] = CheckoutLineItemsRemovePayload;
 Types.types["CheckoutLineItemsUpdatePayload"] = CheckoutLineItemsUpdatePayload;
+Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
 Types.queryType = "QueryRoot";
 Types.mutationType = "Mutation";
 Types.subscriptionType = null;
