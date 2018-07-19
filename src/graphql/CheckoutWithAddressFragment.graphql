@@ -18,57 +18,10 @@ fragment MailingAddressFragment on MailingAddress {
   provinceCode
 }
 
-fragment DiscountApplicationFragment on DiscountApplication {
-	targetSelection
-	allocationMethod
-	targetType
-	value {
-		...on MoneyV2 {
-			amount
-			currencyCode
-		}
-		...on PricingPercentageValue {
-			percentage
-		}
-	}
-	...on ManualDiscountApplication {
-		title
-		description
-	}
-	...on DiscountCodeApplication {
-		code
-		applicable
-	}
-	...on ScriptDiscountApplication {
-		description
-	}
-	...on AutomaticDiscountApplication {
-		title
-	}
-}
-
 fragment CheckoutWithAddressFragment on Checkout {
   id
   ready
-  availableShippingRates {
-    ready
-    shippingRates {
-      handle
-      price
-      title
-    }
-   }
-   discountApplications(first: 10) {
-		pageInfo {
-			hasNextPage
-			hasPreviousPage
-		}
-		edges {
-			node {
-				...DiscountApplicationFragment
-			}
-		}
-	}
+  availableShippingRates
   requiresShipping
   note
   paymentDue

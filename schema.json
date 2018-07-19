@@ -32,7 +32,8 @@
         {
           "kind": "OBJECT",
           "name": "QueryRoot",
-          "description": "The schema’s entry-point for queries. This acts as the public, top-level API from which all queries must start.",
+          "description":
+          "The schema’s entry-point for queries. This acts as the public, top-level API from which all queries must start.",
           "fields": [
             {
               "name": "articles",
@@ -263,8 +264,112 @@
               "deprecationReason": null
             },
             {
-              "name": "collections",
-              "description": "List of the shop’s collections.",
+              "kind": "OBJECT",
+              "name": "AppliedGiftCard",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Article",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Blog",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Checkout",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "CheckoutLineItem",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Collection",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Comment",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MailingAddress",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Order",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Payment",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Product",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "ProductOption",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "ProductVariant",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "ShopPolicy",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "SCALAR",
+          "name": "ID",
+          "description": "Represents a unique identifier. It is often used to refetch an object or as key for a cache.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Customer",
+          "description":
+          "A customer represents a customer account with the shop. Customer accounts store contact information for the customer, saving logged-in customers the trouble of having to provide it at every checkout.",
+          "fields": [
+            {
+              "name": "acceptsMarketing",
+              "description": "Indicates whether the customer has consented to be sent marketing material via email.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "addresses",
+              "description": "A list of addresses for the customer.",
               "args": [
                 {
                   "name": "first",
@@ -814,27 +919,21 @@
           "possibleTypes": null
         },
         {
-          "kind": "INTERFACE",
-          "name": "Node",
-          "description": "An object with an ID to support global identification.",
-          "fields": [
-            {
-              "name": "id",
-              "description": "Globally unique identifier.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
+          "kind": "SCALAR",
+          "name": "String",
+          "description":
+          "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "description": "Represents `true` or `false` values.",
+          "fields": null,
           "inputFields": null,
           "interfaces": null,
           "enumValues": null,
@@ -1288,7 +1387,35 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "Float",
+          "description":
+          "Represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MailingAddressConnection",
+          "description": null,
+          "fields": [
             {
               "name": "tags",
               "description": "A list of tags assigned to the customer.\nAdditional access scope required: unauthenticated_read_customer_tags.\n",
@@ -1397,7 +1524,29 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "Int",
+          "description":
+          "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "OrderConnection",
+          "description": null,
+          "fields": [
             {
               "name": "country",
               "description": "The name of the country.\n",
@@ -1539,7 +1688,26 @@
                   },
                   "defaultValue": "true"
                 }
-              ],
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Order",
+          "description":
+          "An order is a customer’s completed request to purchase one or more products from a shop. An order is created when a customer completes the checkout process, during which time they provides an email address, billing address and payment information.",
+          "fields": [
+            {
+              "name": "currencyCode",
+              "description": "The code of the currency used for the payment.",
+              "args": [],
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -1613,8 +1781,25 @@
               "deprecationReason": null
             },
             {
-              "name": "province",
-              "description": "The region of the address, such as the province, state, or district.",
+              "name": "processedAt",
+              "description":
+              "The date and time when the order was imported.\nThis value can be set to dates in the past when importing from other systems.\nIf no value is provided, it will be auto-generated based on current date and time.\n",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "DateTime",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "shippingAddress",
+              "description": "The address to where the order will be shipped.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -1637,8 +1822,57 @@
               "deprecationReason": null
             },
             {
-              "name": "zip",
-              "description": "The zip or postal code of the address.",
+              "name": "totalPrice",
+              "description":
+              "The sum of all the prices of all the items in the order, taxes and discounts included (must be positive).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Money",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "totalRefunded",
+              "description": "The total amount that has been refunded.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Money",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "totalShippingPrice",
+              "description": "The total cost of shipping.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Money",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "totalTax",
+              "description": "The total cost of taxes.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -2523,7 +2757,19 @@
               "description": "Monaco.",
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "OrderLineItem",
+          "description":
+          "Represents a single line in an order. There is one line item for each distinct product variant.",
+          "fields": [
             {
               "name": "MN",
               "description": "Mongolia.",
@@ -2547,6 +2793,30 @@
               "description": "Morocco.",
               "isDeprecated": false,
               "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ProductVariant",
+          "description":
+          "A product variant represents a different version of a product, such as differing sizes or differing colors.",
+          "fields": [
+            {
+              "name": "available",
+              "description": "Indicates if the product variant is in stock.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use `availableForSale` instead"
             },
             {
               "name": "MZ",
@@ -2555,8 +2825,15 @@
               "deprecationReason": null
             },
             {
-              "name": "MM",
-              "description": "Myanmar.",
+              "name": "compareAtPrice",
+              "description":
+              "The compare at price of the variant. This can be used to mark a variant as on sale, when `compareAtPrice` is higher than `price`.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Money",
+                "ofType": null
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2685,7 +2962,16 @@
               "description": "Philippines.",
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "SelectedOption",
+          "description":
+          "Custom properties that a shop owner can use to define product variants.\nMultiple options can exist. Options are represented as: option1, option2, option3, etc.\n",
+          "fields": [
             {
               "name": "PN",
               "description": "Pitcairn.",
@@ -2697,7 +2983,19 @@
               "description": "Poland.",
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Product",
+          "description":
+          "A product represents an individual item for sale in a Shopify store. Products are often physical, but they don't have to be. \nFor example, a digital download (such as a movie, music or ebook file) also qualifies as a product, as do services (such as equipment rental, work for hire, customization of another product or an extended warranty).",
+          "fields": [
             {
               "name": "PT",
               "description": "Portugal.",
@@ -2723,8 +3021,19 @@
               "deprecationReason": null
             },
             {
-              "name": "RO",
-              "description": "Romania.",
+              "name": "handle",
+              "description":
+              "A human-friendly unique string for the Product automatically generated from its title.\nThey are used by the Liquid templating language to refer to objects.\n",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2741,8 +3050,15 @@
               "deprecationReason": null
             },
             {
-              "name": "BL",
-              "description": "Saint Barthélemy.",
+              "name": "onlineStoreUrl",
+              "description":
+              "The online store URL for the product.\nA value of `null` indicates that the product is not published to the Online Store sales channel.\n",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2753,8 +3069,19 @@
               "deprecationReason": null
             },
             {
-              "name": "KN",
-              "description": "Saint Kitts And Nevis.",
+              "name": "productType",
+              "description":
+              "A categorization that a product can be tagged with, commonly used for filtering and searching.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2765,8 +3092,27 @@
               "deprecationReason": null
             },
             {
-              "name": "MF",
-              "description": "Saint Martin.",
+              "name": "tags",
+              "description":
+              "A categorization that a product can be tagged with, commonly used for filtering and searching.\nEach comma-separated tag has a character limit of 255.\n",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2783,8 +3129,38 @@
               "deprecationReason": null
             },
             {
-              "name": "SM",
-              "description": "San Marino.",
+              "name": "variantBySelectedOptions",
+              "description":
+              "Find a product’s variant based on its selected options.\nThis is useful for converting a user’s selection of product options into a single matching variant.\nIf there is not a variant for the selected options, `null` will be returned.\n",
+              "args": [
+                {
+                  "name": "selectedOptions",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "SelectedOptionInput",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductVariant",
+                "ofType": null
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -2829,7 +3205,19 @@
               "description": "Singapore.",
               "isDeprecated": false,
               "deprecationReason": null
-            },
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Collection",
+          "description":
+          "A collection represents a grouping of products that a shop owner can create to organize them or make their shops easier to browse.",
+          "fields": [
             {
               "name": "SX",
               "description": "Sint Maarten.",
@@ -2843,8 +3231,19 @@
               "deprecationReason": null
             },
             {
-              "name": "SI",
-              "description": "Slovenia.",
+              "name": "handle",
+              "description":
+              "A human-friendly unique string for the collection automatically generated from its title.\nLimit of 255 characters.\n",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -3271,10 +3670,68 @@
           "possibleTypes": null
         },
         {
-          "kind": "SCALAR",
-          "name": "Int",
-          "description": "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
-          "fields": null,
+          "kind": "OBJECT",
+          "name": "ProductOption",
+          "description":
+          "Custom product property names like \"Size\", \"Color\", and \"Material\".\nProducts are based on permutations of these options.\nA product may have a maximum of 3 options.\n255 characters limit each.\n",
+          "fields": [
+            {
+              "name": "id",
+              "description": "Globally unique identifier.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "name",
+              "description": "The product option’s name.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "values",
+              "description": "The corresponding value to the product option name.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
           "inputFields": null,
           "interfaces": null,
           "enumValues": null,
@@ -3444,8 +3901,9 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "last",
-                  "description": "Returns up to the last `n` elements from the list.",
+                  "name": "query",
+                  "description":
+                  "Supported filter parameters:\n - `author`\n - `updated_at`\n - `created_at`\n - `blog_title`\n - `tag`",
                   "type": {
                     "kind": "SCALAR",
                     "name": "Int",
@@ -3539,8 +3997,9 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "last",
-                  "description": "Returns up to the last `n` elements from the list.",
+                  "name": "query",
+                  "description":
+                  "Supported filter parameters:\n - `handle`\n - `title`\n - `updated_at`\n - `created_at`",
                   "type": {
                     "kind": "SCALAR",
                     "name": "Int",
@@ -3744,7 +4203,7 @@
                 {
                   "name": "query",
                   "description":
-                    "Supported filter parameters:\n - `author`\n - `updated_at`\n - `created_at`\n - `blog_title`\n - `tag`",
+                  "Supported filter parameters:\n - `title`\n - `product_type`\n - `vendor`\n - `created_at`\n - `updated_at`\n - `tag`",
                   "type": {
                     "kind": "SCALAR",
                     "name": "Int",
@@ -6273,60 +6732,37 @@
               "deprecationReason": null
             },
             {
-              "name": "collections",
-              "description": "List of collections a product belongs to.",
-              "args": [
-                {
-                  "name": "first",
-                  "description": "Returns up to the first `n` elements from the list.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "after",
-                  "description": "Returns the elements that come after the specified cursor.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "last",
-                  "description": "Returns up to the last `n` elements from the list.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "before",
-                  "description": "Returns the elements that come before the specified cursor.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "reverse",
-                  "description": "Reverse the order of the underlying list.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  },
-                  "defaultValue": "false"
+              "name": "url",
+              "description": "The URL of the domain (eg: `https://example.com`).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "URL",
+                  "ofType": null
                 }
-              ],
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ShopPolicy",
+          "description":
+          "Policy that a merchant has configured for their store, such as their refund or privacy policy.",
+          "fields": [
+            {
+              "name": "body",
+              "description": "Policy text, maximum size of 64kb.",
+              "args": [],
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -7879,8 +8315,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ImageConnection",
-          "description": null,
+          "name": "Mutation",
+          "description":
+          "The schema’s entry-point for mutations. This acts as the public, top-level API from which all mutation queries must start.",
           "fields": [
             {
               "name": "checkout",
@@ -15952,16 +16389,28 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
+              "name": "checkoutShippingLineUpdate",
+              "description": "Updates the shipping lines on an existing checkout.",
+              "args": [
+                {
+                  "name": "checkoutId",
+                  "description": "The ID of the checkout.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "shippingRateHandle",
+                  "description":
+                  "A concatenation of a Checkout’s shipping provider, price, and title, enabling the customer to select the availableShippingRates.",
+                  "type": {
                     "kind": "NON_NULL",
                     "name": null,
                     "ofType": {
@@ -16002,15 +16451,23 @@
               "defaultValue": null
             },
             {
-              "name": "idempotencyKey",
-              "description": "A unique client generated key used to avoid duplicate charges. When a duplicate payment is found, the original is returned instead of creating a new one.",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
+              "name": "customerAccessTokenCreate",
+              "description":
+              "Creates a customer access token.\nThe customer access token is required to modify the customer object in any way.\n",
+              "args": [
+                {
+                  "name": "input",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "CustomerAccessTokenCreateInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
                 }
               },
               "defaultValue": null
@@ -16191,16 +16648,14 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
+              "name": "customerRecover",
+              "description":
+              "Sends a reset password email to the customer, as the first step in the reset password process.",
+              "args": [
+                {
+                  "name": "email",
+                  "description": "The email address of the customer to recover.",
+                  "type": {
                     "kind": "NON_NULL",
                     "name": null,
                     "ofType": {
@@ -16515,8 +16970,33 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
+              "name": "availableShippingRates",
+              "description":
+              "The available shipping rates for this Checkout.\nShould only be used when checkout `requiresShipping` is `true` and\nthe shipping address is valid.\n",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "AvailableShippingRates",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "completedAt",
+              "description": "The date and time when the checkout was completed.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "createdAt",
+              "description": "The date and time when the checkout was created.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -16597,9 +17077,23 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "lineItems",
+              "description":
+              "A list of line item objects, each one containing information about an item in the checkout.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": null,
+                  "type": {
                     "kind": "NON_NULL",
                     "name": null,
                     "ofType": {
@@ -16637,8 +17131,9 @@
               "deprecationReason": null
             },
             {
-              "name": "checkoutUserErrors",
-              "description": "List of errors that occurred executing the mutation.",
+              "name": "paymentDue",
+              "description":
+              "The amount left to be paid. This is equal to the cost of the line items, taxes and shipping minus discounts and gift cards.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -16661,8 +17156,9 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
+              "name": "ready",
+              "description":
+              "Whether or not the Checkout is ready and can be completed. Checkouts may have asynchronous operations that can take time to finish. If you want to complete a checkout or ensure all the fields are populated and up to date, polling is required until the value is true. ",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -16745,8 +17241,9 @@
           "description": "Return type for `checkoutCompleteWithCreditCardV2` mutation.",
           "fields": [
             {
-              "name": "checkout",
-              "description": "The checkout on which the payment was applied.",
+              "name": "shippingLine",
+              "description":
+              "Once a shipping rate is selected by the customer it is transitioned to a `shipping_line` object.",
               "args": [],
               "type": {
                 "kind": "OBJECT",
@@ -16793,8 +17290,9 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
+              "name": "totalPrice",
+              "description":
+              "The sum of all the prices of all the items in the checkout, taxes and discounts included.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -17128,8 +17626,9 @@
           "description": "Return type for `checkoutCustomerAssociateV2` mutation.",
           "fields": [
             {
-              "name": "checkout",
-              "description": "The updated checkout object.",
+              "name": "ready",
+              "description":
+              "Whether or not the shipping rates are ready.\nThe `shippingRates` field is `null` when this value is `false`.\nThis field should be polled until its value becomes `true`.\n",
               "args": [],
               "type": {
                 "kind": "OBJECT",
@@ -17311,8 +17810,43 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "defaultValue": null
+            },
+            {
+              "name": "allowPartialAddresses",
+              "description":
+              "Allows setting partial addresses on a Checkout, skipping the full validation of attributes.\nThe required attributes are city, province, and country.\nFull validation of the addresses is still done at complete time.\n",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "defaultValue": "false"
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "AttributeInput",
+          "description": "Specifies the input fields required for an attribute.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "key",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
             },
             {
               "name": "userErrors",
@@ -17590,8 +18124,10 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "customAttributes",
-              "description": "Extra information in the form of an array of Key-Value pairs about the line item.",
+              "name": "test",
+              "description":
+              "A flag to indicate if the payment is to be done in test mode for gateways that support it.",
+              "args": [],
               "type": {
                 "kind": "LIST",
                 "name": null,
@@ -17608,8 +18144,10 @@
               "defaultValue": null
             },
             {
-              "name": "quantity",
-              "description": "The quantity of the line item.",
+              "name": "transaction",
+              "description":
+              "The actual transaction recorded by Shopify after having processed the payment with the gateway.",
+              "args": [],
               "type": {
                 "kind": "OBJECT",
                 "name": "Checkout",
@@ -17928,10 +18466,12 @@
           "possibleTypes": null
         },
         {
-          "kind": "OBJECT",
-          "name": "CheckoutLineItemsAddPayload",
-          "description": "Return type for `checkoutLineItemsAdd` mutation.",
-          "fields": [
+          "kind": "INPUT_OBJECT",
+          "name": "CreditCardPaymentInput",
+          "description":
+          "Specifies the fields required to complete a checkout with\na Shopify vaulted credit card payment.\n",
+          "fields": null,
+          "inputFields": [
             {
               "name": "customerAccessToken",
               "description": "The newly created customer access token object.",
@@ -17969,9 +18509,9 @@
               "deprecationReason": null
             },
             {
-              "name": "userErrors",
-              "description": "List of errors that occurred executing the mutation.",
-              "args": [],
+              "name": "idempotencyKey",
+              "description":
+              "A unique client generated key used to avoid duplicate charges. When a duplicate payment is found, the original is returned instead of creating a new one.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -18273,9 +18813,9 @@
               "deprecationReason": null
             },
             {
-              "name": "checkoutUserErrors",
-              "description": "List of errors that occurred executing the mutation.",
-              "args": [],
+              "name": "idempotencyKey",
+              "description":
+              "A unique client generated key used to avoid duplicate charges. When a duplicate payment is found, the original is returned instead of creating a new one.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -18507,9 +19047,9 @@
               "deprecationReason": null
             },
             {
-              "name": "field",
-              "description": "Path to the input field which caused the error.",
-              "args": [],
+              "name": "lineItems",
+              "description":
+              "A list of line item objects, each one containing information about an item in the checkout.",
               "type": {
                 "kind": "LIST",
                 "name": null,
@@ -18681,9 +19221,9 @@
               "deprecationReason": null
             },
             {
-              "name": "expiresAt",
-              "description": "The date and time when the customer access token expires.",
-              "args": [],
+              "name": "allowPartialAddresses",
+              "description":
+              "Allows setting partial addresses on a Checkout, skipping the full validation of attributes.\nThe required attributes are city, province, and country.\nFull validation of addresses is still done at complete time.\n",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -19572,6 +20112,34 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CustomerAccessToken",
+          "description":
+          "A CustomerAccessToken represents the unique token required to make modifications to the customer object.",
+          "fields": [
+            {
+              "name": "accessToken",
+              "description": "The customer’s access token.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "userErrors",
@@ -20414,8 +20982,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "__Directive",
-          "description": "A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.\n\nIn some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.",
+          "name": "__Schema",
+          "description":
+          "A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.",
           "fields": [
             {
               "name": "args",
@@ -20478,8 +21047,9 @@
               "deprecationReason": null
             },
             {
-              "name": "name",
-              "description": null,
+              "name": "subscriptionType",
+              "description":
+              "If this server support subscription, the type that subscription operations will be rooted at.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -20555,8 +21125,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "__EnumValue",
-          "description": "One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.",
+          "name": "__Type",
+          "description":
+          "The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.\n\nDepending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.",
           "fields": [
             {
               "name": "deprecationReason",
@@ -20856,8 +21427,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "DiscountCodeApplication",
-          "description": "Discount code applications capture the intentions of a discount code at\nthe time that it is applied.\n",
+          "name": "__Field",
+          "description":
+          "Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.",
           "fields": [
             {
               "name": "allocationMethod",
@@ -20977,8 +21549,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ManualDiscountApplication",
-          "description": "Manual discount applications capture the intentions of a discount that was manually created.\n",
+          "name": "__InputValue",
+          "description":
+          "Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.",
           "fields": [
             {
               "name": "allocationMethod",
@@ -21024,6 +21597,30 @@
                   "name": "DiscountApplicationTargetSelection",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "__EnumValue",
+          "description":
+          "One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.",
+          "fields": [
+            {
+              "name": "deprecationReason",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -21090,8 +21687,9 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ScriptDiscountApplication",
-          "description": "Script discount applications capture the intentions of a discount that\nwas created by a Shopify Script.\n",
+          "name": "__Directive",
+          "description":
+          "A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.\n\nIn some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.",
           "fields": [
             {
               "name": "allocationMethod",
@@ -21205,10 +21803,86 @@
           "possibleTypes": null
         },
         {
-          "kind": "OBJECT",
-          "name": "AutomaticDiscountApplication",
-          "description": "Automatic discount applications capture the intentions of a discount that was automatically applied.\n",
-          "fields": [
+          "kind": "ENUM",
+          "name": "__DirectiveLocation",
+          "description":
+          "A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "QUERY",
+              "description": "Location adjacent to a query operation.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "MUTATION",
+              "description": "Location adjacent to a mutation operation.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SUBSCRIPTION",
+              "description": "Location adjacent to a subscription operation.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "FIELD",
+              "description": "Location adjacent to a field.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "FRAGMENT_DEFINITION",
+              "description": "Location adjacent to a fragment definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "FRAGMENT_SPREAD",
+              "description": "Location adjacent to a fragment spread.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "INLINE_FRAGMENT",
+              "description": "Location adjacent to an inline fragment.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SCHEMA",
+              "description": "Location adjacent to a schema definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SCALAR",
+              "description": "Location adjacent to a scalar definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "OBJECT",
+              "description": "Location adjacent to an object type definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "FIELD_DEFINITION",
+              "description": "Location adjacent to a field definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "ARGUMENT_DEFINITION",
+              "description": "Location adjacent to an argument definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "allocationMethod",
               "description": "The method by which the discount's value is allocated to its entitled items.",
@@ -21363,7 +22037,8 @@
           "args": [
             {
               "name": "reason",
-              "description": "Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted in [Markdown](https://daringfireball.net/projects/markdown/).",
+              "description":
+              "Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted in [Markdown](https://daringfireball.net/projects/markdown/).",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
