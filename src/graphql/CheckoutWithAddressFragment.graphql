@@ -21,7 +21,14 @@ fragment MailingAddressFragment on MailingAddress {
 fragment CheckoutWithAddressFragment on Checkout {
   id
   ready
-  availableShippingRates
+  availableShippingRates {
+    ready
+    shippingRates {
+      handle
+      price
+      title
+    }
+   }
   requiresShipping
   note
   paymentDue
