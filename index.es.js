@@ -3800,7 +3800,14 @@ function query$12(client) {
   spreads.CheckoutWithAddressFragment = document.defineFragment("CheckoutWithAddressFragment", "Checkout", function (root) {
     root.add("id");
     root.add("ready");
-    root.add("availableShippingRates");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("requiresShipping");
     root.add("note");
     root.add("paymentDue");
@@ -5880,7 +5887,10 @@ var ShippingRate = {
 var AvailableShippingRates = {
   "name": "AvailableShippingRates",
   "kind": "OBJECT",
-  "fieldBaseTypes": {},
+  "fieldBaseTypes": {
+    "ready": "Boolean",
+    "shippingRates": "ShippingRate"
+  },
   "implementsNode": false
 };
 
