@@ -3646,6 +3646,14 @@ function query$11(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -3968,6 +3976,14 @@ function query$13(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4133,6 +4149,14 @@ function query$14(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4299,6 +4323,14 @@ function query$15(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4465,6 +4497,14 @@ function query$16(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4631,6 +4671,14 @@ function query$17(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4797,6 +4845,14 @@ function query$18(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -4963,6 +5019,14 @@ function query$19(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
     root.add("note");
     root.add("paymentDue");
     root.add("webUrl");
@@ -5777,7 +5841,8 @@ var Mutation$1 = {
     "checkoutDiscountCodeApply": "CheckoutLineItemsAddPayload",
     "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
     "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
-    "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload"
+    "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload",
+    "checkoutShippingLineUpdate": "CheckoutShippingLineUpdatePayload"
   },
   "implementsNode": false,
   "relayInputObjectBaseTypes": {
@@ -5944,6 +6009,16 @@ var CheckoutShippingAddressUpdatePayload = {
   "implementsNode": false
 };
 
+var CheckoutShippingLineUpdatePayload = {
+  "name": "CheckoutShippingLineUpdatePayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
 var Types = {
   types: {}
 };
@@ -5997,6 +6072,7 @@ Types.types["CheckoutLineItemsAddPayload"] = CheckoutLineItemsAddPayload;
 Types.types["CheckoutLineItemsRemovePayload"] = CheckoutLineItemsRemovePayload;
 Types.types["CheckoutLineItemsUpdatePayload"] = CheckoutLineItemsUpdatePayload;
 Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
+Types.types["CheckoutShippingLineUpdatePayload"] = CheckoutShippingLineUpdatePayload;
 Types.queryType = "QueryRoot";
 Types.mutationType = "Mutation";
 Types.subscriptionType = null;

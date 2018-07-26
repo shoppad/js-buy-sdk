@@ -22,6 +22,14 @@ fragment CheckoutFragment on Checkout {
   id
   ready
   requiresShipping
+  availableShippingRates {
+    ready
+    shippingRates {
+      handle
+      price
+      title
+    }
+   }
   note
   paymentDue
   webUrl
