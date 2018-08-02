@@ -12,6 +12,7 @@ import checkoutLineItemsUpdateMutation from './graphql/checkoutLineItemsUpdateMu
 import checkoutAttributesUpdateMutation from './graphql/checkoutAttributesUpdateMutation.graphql';
 import checkoutDiscountCodeApplyMutation from './graphql/checkoutDiscountCodeApplyMutation.graphql';
 import checkoutShippingAddressUpdateMutation from './graphql/checkoutShippingAddressUpdateMutation.graphql';
+import checkoutShippingLineUpdateMutation from './graphql/checkoutShippingLineUpdateMutation.graphql';
 
 /**
  * The JS Buy SDK checkout resource
@@ -240,6 +241,12 @@ class CheckoutResource extends Resource {
     return this.graphQLClient
       .send(checkoutShippingAddressUpdateMutation, {checkoutId, shippingAddress})
       .then(handleCheckoutMutation('checkoutShippingAddressUpdate', this.graphQLClient));
+  }
+
+  updateShippingLines(checkoutId, shippingRateHandle) {
+    return this.graphQLClient
+      .send(checkoutShippingLineUpdateMutation, {checkoutId, shippingRateHandle})
+      .then(handleCheckoutMutation('checkoutShippingLineUpdate', this.graphQLClient));
   }
 }
 
