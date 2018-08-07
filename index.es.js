@@ -5479,6 +5479,28 @@ var CheckoutResource = function (_Resource) {
     }
 
     /**
+     * Applies a discount to an existing checkout using a discount code.
+     *
+     * @example
+     * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+     * const discountCode = 'best-discount-ever';
+     *
+     * client.checkout.addDiscount(checkoutId, discountCode).then((checkout) => {
+     *   // Do something with the updated checkout
+     * });
+     *
+     * @param {String} checkoutId The ID of the checkout to add discount to.
+     * @param {String} discountCode The discount code to apply to the checkout.
+     * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+     */
+
+  }, {
+    key: 'removeDiscount',
+    value: function removeDiscount(checkoutId, discountCode) {
+      return this.graphQLClient.send(query$18, { checkoutId: checkoutId, discountCode: discountCode }).then(handleCheckoutMutation('checkoutDiscountCodeApply', this.graphQLClient));
+    }
+
+    /**
      * Removes line items from an existing checkout.
      *
      * @example
@@ -6018,6 +6040,7 @@ var Mutation$1 = {
     "checkoutCreate": "CheckoutCreatePayload",
     "checkoutLineItemsAdd": "CheckoutLineItemsAddPayload",
     "checkoutDiscountCodeApply": "CheckoutLineItemsAddPayload",
+    "checkoutDiscountCodeRemove": "CheckoutLineItemsAddPayload",
     "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
     "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
     "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload",
