@@ -57,21 +57,14 @@
 
 
 
+
+
+
+
+
+
+
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
 
@@ -143,7 +136,6 @@
 
 
 
-
     
     </div>
 
@@ -175,9 +167,6 @@
 
     
 
-
-<dl class="details">
-
     
 
     
@@ -206,7 +195,7 @@
         <th>Name</th>
         
 
-    
+        <th>Type</th>
 
         
 
@@ -234,7 +223,8 @@
 
             
 
-<span class="param-type">GraphModel</span>
+            <td class="description last"><p>The ID of the checkout to add discount to.</p></td>
+        </tr>
 
     
 
@@ -256,6 +246,8 @@
 
             
 
+            <td class="description last"><p>The discount code to apply to the checkout.</p></td>
+        </tr>
 
     
     </tbody>
@@ -266,6 +258,7 @@
 
 
 
+<dl class="details">
 
     
 
@@ -317,6 +310,7 @@
 
 
 
+<h5>Returns:</h5>
 
         
 <div class="param-desc">
@@ -818,7 +812,7 @@ client.checkout.addLineItems(checkoutId, lineItems).then((checkout) => {
 
             
 
-            <td class="description last"><p>A presentment currency code. See the <a href="https://help.shopify.com/en/api/storefront-api/reference/enum/currencycode">Storefront API reference</a> for valid currency code values.</p></td>
+            <td class="description last"><p>A list of custom attributes for the checkout. See the <a href="https://help.shopify.com/api/storefront-api/reference/input_object/attributeinput">Storefront API reference</a> for valid input fields.</p></td>
         </tr>
 
     
@@ -1339,21 +1333,19 @@ client.checkout.create(input).then((checkout) => {
     </tbody>
 </table>
 
+    
+    </tbody>
+</table>
+
         <tr>
             
                 <td class="name"><code>appliedGiftCardId</code></td>
             
 
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
 
 
             
             </td>
-
-            
 
 <dl class="details">
 
@@ -1396,10 +1388,12 @@ client.checkout.create(input).then((checkout) => {
 </dl>
 
     
+</dl>
 
     
 
     
+
 
 
     
@@ -1407,8 +1401,6 @@ client.checkout.create(input).then((checkout) => {
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="checkout-resource.js.html">checkout-resource.js</a>, <a href="checkout-resource.js.html#line223">line 223</a>
     </li></ul></dd>
-    
-
     
 
     
@@ -1446,10 +1438,6 @@ client.checkout.create(input).then((checkout) => {
 
 
 
-        
-<div class="param-desc">
-    <p>A promise resolving with the updated checkout.</p>
-</div>
 
     <h5>Example</h5>
     
@@ -1473,8 +1461,10 @@ client.checkout.removeDiscount(checkoutId).then((checkout) => {
     
 
 
-        
-            
+
+<div class="description">
+    <p>Removes line items from an existing checkout.</p>
+</div>
 
 <div class="description">
     <p>Removes line items from an existing checkout.</p>
@@ -1484,14 +1474,12 @@ client.checkout.removeDiscount(checkoutId).then((checkout) => {
     <h4 class="name" id="updateEmail"><span class="type-signature"></span>updateEmail<span class="signature">(checkoutId, email)</span><span class="type-signature"> &rarr; {Promise|GraphModel}</span></h4>
     
 
-    
 
 
 
 <div class="description">
     <p>Replaces the value of checkout's email address</p>
 </div>
-
 
 
 
@@ -1528,7 +1516,10 @@ client.checkout.removeDiscount(checkoutId).then((checkout) => {
                 
 <span class="param-type">String</span>
 
-        
+        <tr>
+            
+                <td class="name"><code>checkoutId</code></td>
+            
 
             
             </td>
@@ -1842,14 +1833,6 @@ client.checkout.removeLineItems(checkoutId, lineItemIds).then((checkout) => {
                 
 <span class="param-type">Array.&lt;Object></span>
 
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-|
 
             
             </td>
@@ -1883,6 +1866,8 @@ client.checkout.removeLineItems(checkoutId, lineItemIds).then((checkout) => {
                 
 <span class="param-type">String</span>
 
+        
+            
 
             
             </td>
@@ -1960,6 +1945,205 @@ client.checkout.removeLineItems(checkoutId, lineItemIds).then((checkout) => {
     
 </dl>
 
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>checkoutId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The ID of the checkout to update.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>input</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+        
+<div class="param-desc">
+    <p>A promise resolving with the updated checkout.</p>
+</div>
+
+            
+
+            <td class="description last"><p>An input object containing zero or more of:</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>allowPartialAddresses</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An email connected to the checkout.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>customAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+|
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+    
+
+            <td class="description last"><p>A list of custom attributes for the checkout. See the <a href="https://help.shopify.com/api/storefront-api/reference/input_object/attributeinput">Storefront API reference</a> for valid input fields.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>note</code></td>
+            
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateLineItems"><span class="type-signature"></span>updateLineItems<span class="signature">(checkoutId, lineItems)</span><span class="type-signature"> &rarr; {Promise|GraphModel}</span></h4>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     <h5>Parameters:</h5>
     
@@ -1980,126 +2164,6 @@ client.checkout.removeLineItems(checkoutId, lineItemIds).then((checkout) => {
         <th class="last">Description</th>
     </tr>
     </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>checkoutId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-        
-<div class="param-desc">
-    <p>A promise resolving with the updated checkout.</p>
-</div>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>lineItems</code></td>
-            
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-|
-
-            
-            </td>
-
-            
-
-            
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
-const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
-
-<dl class="details">
-
-    
-
-    
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateLineItems"><span class="type-signature"></span>updateLineItems<span class="signature">(checkoutId, lineItems)</span><span class="type-signature"> &rarr; {Promise|GraphModel}</span></h4>
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="checkout-resource.js.html">checkout-resource.js</a>, <a href="checkout-resource.js.html#line292">line 292</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-
-        
-
-        
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-|
 
     <tbody>
     
@@ -2152,9 +2216,14 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
     </tbody>
 </table>
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
 
 
 
+    
 
 
 <dl class="details">
@@ -2197,13 +2266,39 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
     
 </dl>
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+
+        
+
+        
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+|
+
+    <tbody>
     
 
+        <tr>
+            
+                <td class="name"><code>checkoutId</code></td>
+            
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">String</span>
 
 
             
@@ -2213,16 +2308,6 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
 
             
 
-            <td class="description last"><p>A shipping address.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 <h5>Returns:</h5>
 
         
@@ -2230,9 +2315,15 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
     <p>A promise resolving with the updated checkout.</p>
 </div>
 
-<dl class="details">
+        <tr>
+            
+                <td class="name"><code>lineItems</code></td>
+            
 
-    
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
 
 <dl>
     <dt>
@@ -2245,7 +2336,7 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
 
 <span class="param-type">GraphModel</span>
 
-    
+            
 
     </dd>
 </dl>
@@ -2253,10 +2344,10 @@ const input = {customAttributes: [{key: "MyKey", value: "MyValue"}]};
     
 
     
+    </tbody>
+</table>
 
-    
 
-    
 
     <h5>Example</h5>
     
@@ -2286,7 +2377,6 @@ client.checkout.updateLineItems(checkoutId, lineItems).then(checkout => {
 
     
 
-    
 
 
 <div class="description">
@@ -2418,14 +2508,28 @@ client.checkout.updateLineItems(checkoutId, lineItems).then(checkout => {
     
 </dl>
 
+    
 
 
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
 
 
+            
+            </td>
 
+            
 
+            
 
+            <td class="description last"><p>A shipping address.</p></td>
+        </tr>
 
+    
+    </tbody>
+</table>
 
 
 
@@ -2437,7 +2541,9 @@ client.checkout.updateLineItems(checkoutId, lineItems).then(checkout => {
     <p>A promise resolving with the updated checkout.</p>
 </div>
 
+<dl class="details">
 
+    
 
 <dl>
     <dt>
@@ -2450,14 +2556,16 @@ client.checkout.updateLineItems(checkoutId, lineItems).then(checkout => {
 
 <span class="param-type">GraphModel</span>
 
+    
 
     </dd>
 </dl>
 
     
 
+    
 
-
+    
 
     <h5>Example</h5>
     

@@ -101,6 +101,30 @@ class CheckoutResource extends Resource {
   }
 
   /**
+   * Fetches a checkout by ID.
+   *
+   * @example
+   * client.checkout.fetch('FlZj9rZXlN5MDY4ZDFiZTUyZTUwNTE2MDNhZjg=').then((checkout) => {
+   *   // Do something with the checkout
+   * });
+   *
+   * @param {String} id The id of the checkout to fetch.
+   * @return {Promise|GraphModel} A promise resolving with a `GraphModel` of the checkout.
+   */
+  fetchWithAddress(id) {
+    return this.graphQLClient
+      .send(checkoutNodeQueryWithAddress, {id})
+      .then(defaultResolver('node'))
+      .then((checkout) => {
+        return this.graphQLClient.fetchAllPages(checkout.lineItems, {pageSize: 250}).then((lineItems) => {
+          checkout.attrs.lineItems = lineItems;
+
+          return checkout;
+        });
+      });
+  }
+
+  /**
    * Creates a checkout.
    *
    * @example
@@ -275,6 +299,25 @@ class CheckoutResource extends Resource {
     return this.graphQLClient
       .send(checkoutGiftCardRemoveV2Mutation, {checkoutId, appliedGiftCardId})
       .then(handleCheckoutMutation('checkoutGiftCardRemoveV2', this.graphQLClient));
+  }
+
+  /**
+   * Removes a discount from an existing checkout.
+   *
+   * @example
+   * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+   *
+   * client.checkout.removeDiscount(checkoutId).then((checkout) => {
+   *   // Do something with the updated checkout
+   * });
+   *
+   * @param {String} checkoutId The ID of the checkout to add discount to.
+   * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+   */
+  removeDiscount(checkoutId) {
+    return this.graphQLClient
+      .send(checkoutDiscountCodeRemoveMutation, {checkoutId})
+      .then(handleCheckoutMutation('checkoutDiscountCodeRemove', this.graphQLClient));
   }
 
   /**
