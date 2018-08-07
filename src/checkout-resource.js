@@ -291,6 +291,27 @@ class CheckoutResource extends Resource {
   }
 
   /**
+   * Applies a discount to an existing checkout using a discount code.
+   *
+   * @example
+   * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+   * const discountCode = 'best-discount-ever';
+   *
+   * client.checkout.addDiscount(checkoutId, discountCode).then((checkout) => {
+   *   // Do something with the updated checkout
+   * });
+   *
+   * @param {String} checkoutId The ID of the checkout to add discount to.
+   * @param {String} discountCode The discount code to apply to the checkout.
+   * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+   */
+  removeDiscount(checkoutId, discountCode) {
+    return this.graphQLClient
+      .send(checkoutDiscountCodeApplyMutation, {checkoutId, discountCode})
+      .then(handleCheckoutMutation('checkoutDiscountCodeApply', this.graphQLClient));
+  }
+
+  /**
    * Removes line items from an existing checkout.
    *
    * @example
