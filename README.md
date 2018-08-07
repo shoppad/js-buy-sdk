@@ -24,6 +24,7 @@ and provides the ability to retrieve products and collections from your shop, ad
   + [Removing Line Items](#removing-line-items)
   + [Fetching a Checkout](#fetching-a-checkout)
   + [Adding a Discount](#adding-a-discount)
+  + [Removing a Discount](#removing-a-discount)
 - [Example Apps](#example-apps)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -191,6 +192,15 @@ const discountCode = 'best-discount-ever';
 client.checkout.addDiscount(checkoutId, discountCode).then(checkout => {
   // Do something with the updated checkout
   console.log(checkout);
+});
+```
+
+### Removing a Discount
+```javascript
+const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+
+client.checkout.removeDiscount(checkoutId).then((checkout) => {
+  // Do something with the updated checkout
 });
 ```
 
