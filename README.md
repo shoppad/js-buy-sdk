@@ -30,11 +30,6 @@ View our [Changelog](https://github.com/Shopify/js-buy-sdk/blob/master/CHANGELOG
   + [Fetching a Checkout](#fetching-a-checkout)
   + [Adding a Discount](#adding-a-discount)
   + [Removing a Discount](#removing-a-discount)
-  + [Updating a Shipping Address](#updating-a-shipping-address)
-  + [Completing a checkout](#completing-a-checkout)
-- [Expanding the SDK](#expanding-the-sdk)
-  + [Initializing the Client](#initializing-the-client-1)
-  + [Fetching Products](#fetching-products-1)
 - [Example Apps](#example-apps)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -249,73 +244,11 @@ client.checkout.addDiscount(checkoutId, discountCode).then(checkout => {
 
 ### Removing a Discount
 ```javascript
-const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
+const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
 
-// Removes the applied discount from an existing checkout.
-client.checkout.removeDiscount(checkoutId).then(checkout => {
-  // Do something with the updated checkout
-  console.log(checkout);
-});
-```
-
-### Updating a Shipping Address
-```javascript
-const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
-
-const shippingAddress = {
-   address1: 'Chestnut Street 92',
-   address2: 'Apartment 2',
-   city: 'Louisville',
-   company: null,
-   country: 'United States',
-   firstName: 'Bob',
-   lastName: 'Norman',
-   phone: '555-625-1199',
-   province: 'Kentucky',
-   zip: '40202'
- };
-
-// Update the shipping address for an existing checkout.
-client.checkout.updateShippingAddress(checkoutId, shippingAddress).then(checkout => {
+client.checkout.removeDiscount(checkoutId).then((checkout) => {
   // Do something with the updated checkout
 });
-```
-
-### Completing a checkout
-
-The simplest way to complete a checkout is to use the [webUrl](https://help.shopify.com/en/api/storefront-api/reference/object/checkout) property that is returned when creating a checkout. This URL redirects the customer to Shopify's [online checkout](https://help.shopify.com/en/manual/checkout-settings) to complete the purchase.
-
-## Expanding the SDK
-
-Not all fields that are available on the [Storefront API](https://help.shopify.com/en/api/custom-storefronts/storefront-api/reference) are exposed through the SDK. If you use the unoptimized version of the SDK, you can easily build your own queries. In order to do this, use the UMD Unoptimized build.
-
-### Initializing the Client
-```javascript
-// fetch the large, unoptimized version of the SDK
-import Client from 'shopify-buy/index.unoptimized.umd';
-
-const client = Client.buildClient({
-  domain: 'your-shop-name.myshopify.com',
-  storefrontAccessToken: 'your-storefront-access-token'
-});
-```
-
-### Fetching Products
-```javascript
-// Build a custom products query using the unoptimized version of the SDK
-const productsQuery = client.graphQLClient.query((root) => {
-  root.addConnection('products', {args: {first: 10}}, (product) => {
-    product.add('title');
-    product.add('tags');// Add fields to be returned
-  });
-});
-
-// Call the send method with the custom products query
-client.graphQLClient.send(productsQuery).then(({model, data}) => {
-  // Do something with the products
-  console.log(model);
-});
-
 ```
 
 ## Example Apps

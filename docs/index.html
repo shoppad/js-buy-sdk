@@ -70,14 +70,6 @@ and provides the ability to retrieve products and collections from your shop, ad
 <li><a href="#fetching-a-checkout">Fetching a Checkout</a></li>
 <li><a href="#adding-a-discount">Adding a Discount</a></li>
 <li><a href="#removing-a-discount">Removing a Discount</a></li>
-<li><a href="#updating-a-shipping-address">Updating a Shipping Address</a></li>
-<li><a href="#completing-a-checkout">Completing a checkout</a></li>
-</ul>
-</li>
-<li><a href="#expanding-the-sdk">Expanding the SDK</a>
-<ul>
-<li><a href="#initializing-the-client-1">Initializing the Client</a></li>
-<li><a href="#fetching-products-1">Fetching Products</a></li>
 </ul>
 </li>
 <li><a href="#example-apps">Example Apps</a></li>
@@ -248,68 +240,12 @@ const discountCode = 'best-discount-ever';
 client.checkout.addDiscount(checkoutId, discountCode).then(checkout => {
   // Do something with the updated checkout
   console.log(checkout);
-});
-</code></pre>
-<h3 id="removing-a-discount">Removing a Discount</h3>
-<pre class="prettyprint source lang-javascript"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
+});</code></pre><h3 id="removing-a-discount">Removing a Discount</h3>
+<pre class="prettyprint source lang-javascript"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
 
-// Removes the applied discount from an existing checkout.
-client.checkout.removeDiscount(checkoutId).then(checkout => {
+client.checkout.removeDiscount(checkoutId).then((checkout) => {
   // Do something with the updated checkout
-  console.log(checkout);
-});
-</code></pre>
-<h3 id="updating-a-shipping-address">Updating a Shipping Address</h3>
-<pre class="prettyprint source lang-javascript"><code>const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
-
-const shippingAddress = {
-   address1: 'Chestnut Street 92',
-   address2: 'Apartment 2',
-   city: 'Louisville',
-   company: null,
-   country: 'United States',
-   firstName: 'Bob',
-   lastName: 'Norman',
-   phone: '555-625-1199',
-   province: 'Kentucky',
-   zip: '40202'
- };
-
-// Update the shipping address for an existing checkout.
-client.checkout.updateShippingAddress(checkoutId, shippingAddress).then(checkout => {
-  // Do something with the updated checkout
-});
-</code></pre>
-<h3 id="completing-a-checkout">Completing a checkout</h3>
-<p>The simplest way to complete a checkout is to use the <a href="https://help.shopify.com/en/api/storefront-api/reference/object/checkout">webUrl</a> property that is returned when creating a checkout. This URL redirects the customer to Shopify's <a href="https://help.shopify.com/en/manual/checkout-settings">online checkout</a> to complete the purchase.</p>
-<h2 id="expanding-the-sdk">Expanding the SDK</h2>
-<p>Not all fields that are available on the <a href="https://help.shopify.com/en/api/custom-storefronts/storefront-api/reference">Storefront API</a> are exposed through the SDK. If you use the unoptimized version of the SDK, you can easily build your own queries. In order to do this, use the UMD Unoptimized build.</p>
-<h3 id="initializing-the-client-2">Initializing the Client</h3>
-<pre class="prettyprint source lang-javascript"><code>// fetch the large, unoptimized version of the SDK
-import Client from 'shopify-buy/index.unoptimized.umd';
-
-const client = Client.buildClient({
-  domain: 'your-shop-name.myshopify.com',
-  storefrontAccessToken: 'your-storefront-access-token'
-});
-</code></pre>
-<h3 id="fetching-products-2">Fetching Products</h3>
-<pre class="prettyprint source lang-javascript"><code>// Build a custom products query using the unoptimized version of the SDK
-const productsQuery = client.graphQLClient.query((root) => {
-  root.addConnection('products', {args: {first: 10}}, (product) => {
-    product.add('title');
-    product.add('tags');// Add fields to be returned
-  });
-});
-
-// Call the send method with the custom products query
-client.graphQLClient.send(productsQuery).then(({model, data}) => {
-  // Do something with the products
-  console.log(model);
-});
-
-</code></pre>
-<h2 id="example-apps">Example Apps</h2>
+});</code></pre><h2 id="example-apps">Example Apps</h2>
 <p>For more complete examples of using JS Buy SDK, check out our <a href="https://github.com/Shopify/storefront-api-examples">storefront-api-examples</a> project.
 There are JS Buy SDK specific example apps in Node, Ember, and React. You can use these examples as a guideline for creating your own custom storefront.</p>
 <h2 id="documentation">Documentation</h2>
@@ -336,13 +272,13 @@ please see <a href="https://github.com/Shopify/js-buy-sdk/blob/master/CONTRIBUTI
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="ImageHelpers.html">ImageHelpers</a></li><li><a href="ProductHelpers.html">ProductHelpers</a></li></ul><h3>Classes</h3><ul><li><a href="CheckoutResource.html">CheckoutResource</a></li><li><a href="Client.html">Client</a></li><li><a href="CollectionResource.html">CollectionResource</a></li><li><a href="Config.html">Config</a></li><li><a href="ImageResource.html">ImageResource</a></li><li><a href="ProductResource.html">ProductResource</a></li><li><a href="ShopResource.html">ShopResource</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-MIGRATION_GUIDE.html">MIGRATION_GUIDE</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CheckoutResource.html">CheckoutResource</a></li><li><a href="Client.html">Client</a></li><li><a href="CollectionResource.html">CollectionResource</a></li><li><a href="Config.html">Config</a></li><li><a href="ImageResource.html">ImageResource</a></li><li><a href="ProductResource.html">ProductResource</a></li><li><a href="ShopResource.html">ShopResource</a></li></ul><h3>Namespaces</h3><ul><li><a href="ImageHelpers.html">ImageHelpers</a></li><li><a href="ProductHelpers.html">ProductHelpers</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-MIGRATION_GUIDE.html">MIGRATION_GUIDE</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Wed Jan 08 2020 12:46:32 GMT-0500 (Eastern Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Aug 07 2018 12:18:10 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>
