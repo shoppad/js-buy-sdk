@@ -15,13 +15,11 @@ export default {
         "taxesIncluded": false,
         "currencyCode": "CAD",
         "totalPrice": "80.28",
-        "lineItemsSubtotalPrice": {
-          "amount": "74.99",
-          "currencyCode": "CAD"
-        },
         "subtotalPrice": "67.50",
         "totalTax": "8.78",
         "paymentDue": "80.28",
+        "taxExempt": false,
+        "taxesIncluded": false,
         "completedAt": null,
         "shippingAddress": {
           "address1": "123 Cat Road",
@@ -74,33 +72,10 @@ export default {
                       "allocationMethod": "ACROSS",
                       "targetType": "LINE_ITEM",
                       "code": "TENPERCENTOFF",
-                      "applicable": true,
-                      "value": {
-                        "percentage": "10"
-                      }
+                      "applicable": true
                     }
                   }
                 ]
-              }
-            }
-          ]
-        },
-        "discountApplications": {
-          "pageInfo": {
-            "hasNextPage": false,
-            "hasPreviousPage": false
-          },
-          "edges": [
-            {
-              "node": {
-                "targetSelection": "ALL",
-                "allocationMethod": "ACROSS",
-                "targetType": "LINE_ITEM",
-                "code": "TENPERCENTOFF",
-                "applicable": true,
-                "value": {
-                  "percentage": "10"
-                }
               }
             }
           ]

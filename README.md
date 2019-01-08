@@ -14,6 +14,10 @@ and provides the ability to retrieve products and collections from your shop, ad
 
 View our [Changelog](https://github.com/Shopify/js-buy-sdk/blob/master/CHANGELOG.md) for details about our releases.
 
+## Changelog
+
+View our [Changelog](https://github.com/Shopify/js-buy-sdk/blob/master/CHANGELOG.md) for details about our releases.
+
 ## Table Of Contents
 
 - [Installation](#installation)
@@ -58,12 +62,6 @@ You can also use a specific release version:
 
 ```html
 <script src="https://sdks.shopifycdn.com/js-buy-sdk/1.11.0/index.umd.min.js"></script>
-```
-
-You can also fetch the unoptimized release for a version (2.0.1 and above). This will be larger than the optimized version, as it will contain all fields that are available in the [Storefront API](https://help.shopify.com/en/api/custom-storefronts/storefront-api/reference):
-
-```html
-<script src="https://sdks.shopifycdn.com/js-buy-sdk/2.0.1/index.unoptimized.umd.min.js"></script>
 ```
 
 ## Builds
@@ -244,10 +242,19 @@ client.checkout.addDiscount(checkoutId, discountCode).then(checkout => {
 
 ### Removing a Discount
 ```javascript
+<<<<<<< HEAD
 const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
 
 client.checkout.removeDiscount(checkoutId).then((checkout) => {
   // Do something with the updated checkout
+=======
+const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
+
+// Removes the applied discount from an existing checkout.
+client.checkout.removeDiscount(checkoutId).then(checkout => {
+  // Do something with the updated checkout
+  console.log(checkout);
+>>>>>>> upstream/master
 });
 ```
 

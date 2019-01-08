@@ -83,14 +83,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yNTYwMjIzNTk3Ng==",
                             "title": "Fluffy / Medium",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 18,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTk2MTY3MzY4NDA=",
@@ -106,18 +98,7 @@ export default {
                                 "name": "Size",
                                 "value": "Medium"
                               }
-                            ],
-                            "unitPrice": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "unitPriceMeasurement": {
-                              "measuredType": "VOLUME",
-                              "quantityUnit": "ML",
-                              "quantityValue": 5.0,
-                              "referenceUnit": "ML",
-                              "referenceValue": 1
-                            }
+                            ]
                           }
                         },
                         {
@@ -126,14 +107,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yNTYwMjIzNjA0MA==",
                             "title": "Extra Fluffy / Small",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 18,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI=",
@@ -149,15 +122,7 @@ export default {
                                 "name": "Size",
                                 "value": "Small"
                               }
-                            ],
-                            "unitPrice": null,
-                            "unitPriceMeasurement": {
-                              "measuredType": null,
-                              "quantityUnit": null,
-                              "quantityValue": 0.0,
-                              "referenceUnit": null,
-                              "referenceValue": 0
-                            }
+                            ]
                           }
                         },
                         {
@@ -166,14 +131,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yNTYwMjIzNjEwNA==",
                             "title": "Mega Fluff / Large",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 0,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3OTA2NjQ=",
@@ -189,15 +146,7 @@ export default {
                                 "name": "Size",
                                 "value": "Large"
                               }
-                            ],
-                            "unitPrice": null,
-                            "unitPriceMeasurement": {
-                              "measuredType": null,
-                              "quantityUnit": null,
-                              "quantityValue": 0.0,
-                              "referenceUnit": null,
-                              "referenceValue": 0
-                            }
+                            ]
                           }
                         }
                       ]
@@ -254,14 +203,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yOTkzNzExMjEzNg==",
                             "title": "Default Title",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 0,
                             "image": null,
                             "selectedOptions": [
@@ -269,18 +210,7 @@ export default {
                                 "name": "Title",
                                 "value": "Default Title"
                               }
-                            ],
-                            "unitPrice": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "unitPriceMeasurement": {
-                              "measuredType": "VOLUME",
-                              "quantityUnit": "ML",
-                              "quantityValue": 5.0,
-                              "referenceUnit": "ML",
-                              "referenceValue": 1
-                            }
+                            ]
                           }
                         }
                       ]
@@ -359,14 +289,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yOTEwNjAyMjc5Mg==",
                             "title": "small",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 0,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTk4OTI3ODM1NjA=",
@@ -378,15 +300,7 @@ export default {
                                 "name": "Size",
                                 "value": "small"
                               }
-                            ],
-                            "unitPrice": null,
-                            "unitPriceMeasurement": {
-                              "measuredType": null,
-                              "quantityUnit": null,
-                              "quantityValue": 0.0,
-                              "referenceUnit": null,
-                              "referenceValue": 0
-                            }
+                            ]
                           }
                         },
                         {
@@ -395,14 +309,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yOTEwNjA2NDU4NA==",
                             "title": "large",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 0,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc4NTk3MjA=",
@@ -414,18 +320,7 @@ export default {
                                 "name": "Size",
                                 "value": "large"
                               }
-                            ],
-                            "unitPrice": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "unitPriceMeasurement": {
-                              "measuredType": "VOLUME",
-                              "quantityUnit": "ML",
-                              "quantityValue": 5.0,
-                              "referenceUnit": "ML",
-                              "referenceValue": 1
-                            }
+                            ]
                           }
                         },
                         {
@@ -434,14 +329,6 @@ export default {
                             "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yOTEwNjA2NDY0OA==",
                             "title": "very large",
                             "price": "0.00",
-                            "priceV2": {
-                              "amount": "0.00",
-                              "currencyCode": "CAD"
-                            },
-                            "compareAtPriceV2": {
-                              "amount": "5.00",
-                              "currencyCode": "CAD"
-                            },
                             "weight": 0,
                             "image": {
                               "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTk4OTI4MjkzODQ=",
@@ -453,15 +340,7 @@ export default {
                                 "name": "Size",
                                 "value": "very large"
                               }
-                            ],
-                            "unitPrice": null,
-                            "unitPriceMeasurement": {
-                              "measuredType": null,
-                              "quantityUnit": null,
-                              "quantityValue": 0.0,
-                              "referenceUnit": null,
-                              "referenceValue": 0
-                            }
+                            ]
                           }
                         }
                       ]

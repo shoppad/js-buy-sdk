@@ -74,14 +74,6 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "Fluffy",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 18,
                     "image": null,
                     "selectedOptions": [
@@ -89,18 +81,7 @@ export default {
                         "name": "Fur",
                         "value": "Fluffy"
                       }
-                    ],
-                    "unitPrice": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "unitPriceMeasurement": {
-                      "measuredType": "VOLUME",
-                      "quantityUnit": "ML",
-                      "quantityValue": 5.0,
-                      "referenceUnit": "ML",
-                      "referenceValue": 1
-                    }
+                    ]
                   }
                 },
                 {
@@ -109,14 +90,6 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "Extra Fluffy",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 18,
                     "image": null,
                     "selectedOptions": [
@@ -124,15 +97,7 @@ export default {
                         "name": "Fur",
                         "value": "Extra Fluffy"
                       }
-                    ],
-                    "unitPrice": null,
-                    "unitPriceMeasurement": {
-                      "measuredType": null,
-                      "quantityUnit": null,
-                      "quantityValue": 0.0,
-                      "referenceUnit": null,
-                      "referenceValue": 0
-                    }
+                    ]
                   }
                 },
                 {
@@ -141,14 +106,6 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "Mega Fluff",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 0,
                     "image": null,
                     "selectedOptions": [
@@ -156,15 +113,7 @@ export default {
                         "name": "Fur",
                         "value": "Mega Fluff"
                       }
-                    ],
-                    "unitPrice": null,
-                    "unitPriceMeasurement": {
-                      "measuredType": null,
-                      "quantityUnit": null,
-                      "quantityValue": 0.0,
-                      "referenceUnit": null,
-                      "referenceValue": 0
-                    }
+                    ]
                   }
                 }
               ]
@@ -247,29 +196,13 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "small",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 0,
                     "selectedOptions": [
                       {
                         "name": "Size",
                         "value": "small"
                       }
-                    ],
-                    "unitPrice": null,
-                    "unitPriceMeasurement": {
-                      "measuredType": null,
-                      "quantityUnit": null,
-                      "quantityValue": 0.0,
-                      "referenceUnit": null,
-                      "referenceValue": 0
-                    }
+                    ]
                   }
                 },
                 {
@@ -278,29 +211,13 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "large",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 0,
                     "selectedOptions": [
                       {
                         "name": "Size",
                         "value": "large"
                       }
-                    ],
-                    "unitPrice": null,
-                    "unitPriceMeasurement": {
-                      "measuredType": null,
-                      "quantityUnit": null,
-                      "quantityValue": 0.0,
-                      "referenceUnit": null,
-                      "referenceValue": 0
-                    }
+                    ]
                   }
                 },
                 {
@@ -309,29 +226,13 @@ export default {
                     "id": "Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzc4NTc5ODkzODQ=",
                     "title": "very large",
                     "price": "0.00",
-                    "priceV2": {
-                      "amount": "0.00",
-                      "currencyCode": "CAD"
-                    },
-                    "compareAtPriceV2": {
-                      "amount": "5.00",
-                      "currencyCode": "CAD"
-                    },
                     "weight": 0,
                     "selectedOptions": [
                       {
                         "name": "Size",
                         "value": "very large"
                       }
-                    ],
-                    "unitPrice": null,
-                    "unitPriceMeasurement": {
-                      "measuredType": null,
-                      "quantityUnit": null,
-                      "quantityValue": 0.0,
-                      "referenceUnit": null,
-                      "referenceValue": 0
-                    }
+                    ]
                   }
                 }
               ]
