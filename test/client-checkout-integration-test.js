@@ -4,13 +4,18 @@ import fetchMock from './isomorphic-fetch-mock'; // eslint-disable-line import/n
 
 // fixtures
 import checkoutFixture from '../fixtures/checkout-fixture';
+import checkoutNullFixture from '../fixtures/node-null-fixture';
 import checkoutCreateFixture from '../fixtures/checkout-create-fixture';
 import checkoutCreateWithPaginatedLineItemsFixture from '../fixtures/checkout-create-with-paginated-line-items-fixture';
 import {secondPageLineItemsFixture, thirdPageLineItemsFixture} from '../fixtures/paginated-line-items-fixture';
 import checkoutLineItemsAddFixture from '../fixtures/checkout-line-items-add-fixture';
 import checkoutLineItemsUpdateFixture from '../fixtures/checkout-line-items-update-fixture';
 import checkoutLineItemsRemoveFixture from '../fixtures/checkout-line-items-remove-fixture';
-import checkoutUpdateAttributesFixture from '../fixtures/checkout-update-custom-attrs-fixture';
+import checkoutLineItemsReplaceFixture from '../fixtures/checkout-line-items-replace-fixture';
+import checkoutUpdateAttributesV2Fixture from '../fixtures/checkout-update-custom-attrs-fixture';
+import checkoutUpdateEmailV2Fixture from '../fixtures/checkout-update-email-fixture';
+import checkoutDiscountCodeApplyV2Fixture from '../fixtures/checkout-discount-code-apply-fixture';
+import checkoutDiscountCodeRemoveFixture from '../fixtures/checkout-discount-code-remove-fixture';
 
 suite('client-checkout-integration-test', () => {
   const domain = 'client-integration-tests.myshopify.io';
@@ -38,6 +43,17 @@ suite('client-checkout-integration-test', () => {
 
     return client.checkout.fetch(checkoutId).then((checkout) => {
       assert.equal(checkout.id, checkoutId);
+      assert.ok(fetchMock.done());
+    });
+  });
+
+  test('it resolves with null on Client.checkout#fetch for a bad checkoutId', () => {
+    fetchMock.postOnce(apiUrl, checkoutNullFixture);
+
+    const checkoutId = checkoutFixture.data.node.id;
+
+    return client.checkout.fetch(checkoutId).then((checkout) => {
+      assert.equal(checkout, null);
       assert.ok(fetchMock.done());
     });
   });
@@ -72,12 +88,27 @@ suite('client-checkout-integration-test', () => {
       ]
     };
 
-    fetchMock.postOnce(apiUrl, checkoutUpdateAttributesFixture);
+    fetchMock.postOnce(apiUrl, checkoutUpdateAttributesV2Fixture);
 
     return client.checkout.updateAttributes(checkoutId, input).then((checkout) => {
-      assert.equal(checkout.id, checkoutUpdateAttributesFixture.data.checkoutAttributesUpdate.checkout.id);
-      assert.equal(checkout.customAttributes[0].key, checkoutUpdateAttributesFixture.data.checkoutAttributesUpdate.checkout.customAttributes[0].key);
-      assert.equal(checkout.customAttributes[0].value, checkoutUpdateAttributesFixture.data.checkoutAttributesUpdate.checkout.customAttributes[0].value);
+      assert.equal(checkout.id, checkoutUpdateAttributesV2Fixture.data.checkoutAttributesUpdateV2.checkout.id);
+      assert.equal(checkout.customAttributes[0].key, checkoutUpdateAttributesV2Fixture.data.checkoutAttributesUpdateV2.checkout.customAttributes[0].key);
+      assert.equal(checkout.customAttributes[0].value, checkoutUpdateAttributesV2Fixture.data.checkoutAttributesUpdateV2.checkout.customAttributes[0].value);
+      assert.ok(fetchMock.done());
+    });
+  });
+
+  test('it resolves with a checkout on Client.checkout#email_update', () => {
+    const checkoutId = 'Z2lkOi8vU2hvcGlmeS9FeGFtcGxlLzE=';
+    const input = {
+      email: 'user@example.com'
+    };
+
+    fetchMock.postOnce(apiUrl, checkoutUpdateEmailV2Fixture);
+
+    return client.checkout.updateEmail(checkoutId, input).then((checkout) => {
+      assert.equal(checkout.id, checkoutUpdateEmailV2Fixture.data.checkoutEmailUpdateV2.checkout.id);
+      assert.equal(checkout.email, checkoutUpdateEmailV2Fixture.data.checkoutEmailUpdateV2.checkout.email);
       assert.ok(fetchMock.done());
     });
   });
@@ -92,6 +123,21 @@ suite('client-checkout-integration-test', () => {
     fetchMock.postOnce(apiUrl, checkoutLineItemsAddFixture);
 
     return client.checkout.addLineItems(checkoutId, lineItems).then((checkout) => {
+      assert.equal(checkout.id, checkoutId);
+      assert.ok(fetchMock.done());
+    });
+  });
+
+  test('it resolves with a checkout on Client.checkout#replaceLineItems', () => {
+    const checkoutId = checkoutLineItemsReplaceFixture.data.checkoutLineItemsReplace.checkout.id;
+    const lineItems = [
+      {variantId: 'id1', quantity: 5},
+      {variantId: 'id2', quantity: 2}
+    ];
+
+    fetchMock.postOnce(apiUrl, checkoutLineItemsReplaceFixture);
+
+    return client.checkout.replaceLineItems(checkoutId, lineItems).then((checkout) => {
       assert.equal(checkout.id, checkoutId);
       assert.ok(fetchMock.done());
     });
@@ -121,6 +167,63 @@ suite('client-checkout-integration-test', () => {
     const checkoutId = checkoutLineItemsRemoveFixture.data.checkoutLineItemsRemove.checkout.id;
 
     return client.checkout.removeLineItems(checkoutId, ['line-item-id']).then((checkout) => {
+      assert.equal(checkout.id, checkoutId);
+      assert.ok(fetchMock.done());
+    });
+  });
+
+  test('it resolves with a checkout on Client.checkout#addDiscount', () => {
+    fetchMock.postOnce(apiUrl, checkoutDiscountCodeApplyV2Fixture);
+
+    const checkoutId = checkoutDiscountCodeApplyV2Fixture.data.checkoutDiscountCodeApplyV2.checkout.id;
+    const discountCode = 'TENPERCENTOFF';
+
+    return client.checkout.addDiscount(checkoutId, discountCode).then((checkout) => {
+      assert.equal(checkout.id, checkoutId);
+      assert.ok(fetchMock.done());
+    });
+  });
+
+  test('it resolves with checkoutUserErrors on Client.checkout#addDiscount with an invalid code', () => {
+    const checkoutDiscountCodeApplyV2WithCheckoutUserErrorsFixture = {
+      data: {
+        checkoutDiscountCodeApplyV2: {
+          checkoutUserErrors: [
+            {
+              message: 'Discount code Unable to find a valid discount matching the code entered',
+              field: ['discountCode'],
+              code: 'DISCOUNT_NOT_FOUND'
+            }
+          ],
+          userErrors: [
+            {
+              message: 'Discount code Unable to find a valid discount matching the code entered',
+              field: ['discountCode']
+            }
+          ],
+          checkout: null
+        }
+      }
+    };
+
+    fetchMock.postOnce(apiUrl, checkoutDiscountCodeApplyV2WithCheckoutUserErrorsFixture);
+
+    const checkoutId = checkoutDiscountCodeApplyV2Fixture.data.checkoutDiscountCodeApplyV2.checkout.id;
+    const discountCode = 'INVALIDCODE';
+
+    return client.checkout.addDiscount(checkoutId, discountCode).then(() => {
+      assert.ok(false, 'Promise should not resolve');
+    }).catch((error) => {
+      assert.equal(error.message, '[{"message":"Discount code Unable to find a valid discount matching the code entered","field":["discountCode"],"code":"DISCOUNT_NOT_FOUND"}]');
+    });
+  });
+
+  test('it resolves with a checkout on Client.checkout#removeDiscount', () => {
+    fetchMock.postOnce(apiUrl, checkoutDiscountCodeRemoveFixture);
+
+    const checkoutId = checkoutDiscountCodeRemoveFixture.data.checkoutDiscountCodeRemove.checkout.id;
+
+    return client.checkout.removeDiscount(checkoutId).then((checkout) => {
       assert.equal(checkout.id, checkoutId);
       assert.ok(fetchMock.done());
     });

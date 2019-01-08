@@ -8,12 +8,15 @@ import checkoutNodeQueryWithAddress from './graphql/checkoutNodeQueryWithAddress
 import checkoutCreateMutation from './graphql/checkoutCreateMutation.graphql';
 import checkoutLineItemsAddMutation from './graphql/checkoutLineItemsAddMutation.graphql';
 import checkoutLineItemsRemoveMutation from './graphql/checkoutLineItemsRemoveMutation.graphql';
+import checkoutLineItemsReplaceMutation from './graphql/checkoutLineItemsReplaceMutation.graphql';
 import checkoutLineItemsUpdateMutation from './graphql/checkoutLineItemsUpdateMutation.graphql';
-import checkoutAttributesUpdateMutation from './graphql/checkoutAttributesUpdateMutation.graphql';
-import checkoutDiscountCodeApplyMutation from './graphql/checkoutDiscountCodeApplyMutation.graphql';
+import checkoutAttributesUpdateV2Mutation from './graphql/checkoutAttributesUpdateV2Mutation.graphql';
+import checkoutDiscountCodeApplyV2Mutation from './graphql/checkoutDiscountCodeApplyV2Mutation.graphql';
 import checkoutDiscountCodeRemoveMutation from './graphql/checkoutDiscountCodeRemoveMutation.graphql';
+import checkoutEmailUpdateV2Mutation from './graphql/checkoutEmailUpdateV2Mutation.graphql';
 import checkoutShippingAddressUpdateMutation from './graphql/checkoutShippingAddressUpdateMutation.graphql';
 import checkoutShippingLineUpdateMutation from './graphql/checkoutShippingLineUpdateMutation.graphql';
+
 
 /**
  * The JS Buy SDK checkout resource
@@ -37,6 +40,8 @@ class CheckoutResource extends Resource {
       .send(checkoutNodeQuery, {id})
       .then(defaultResolver('node'))
       .then((checkout) => {
+        if (!checkout) { return null; }
+
         return this.graphQLClient.fetchAllPages(checkout.lineItems, {pageSize: 250}).then((lineItems) => {
           checkout.attrs.lineItems = lineItems;
 
@@ -117,8 +122,29 @@ class CheckoutResource extends Resource {
    */
   updateAttributes(checkoutId, input = {}) {
     return this.graphQLClient
-      .send(checkoutAttributesUpdateMutation, {checkoutId, input})
-      .then(handleCheckoutMutation('checkoutAttributesUpdate', this.graphQLClient));
+      .send(checkoutAttributesUpdateV2Mutation, {checkoutId, input})
+      .then(handleCheckoutMutation('checkoutAttributesUpdateV2', this.graphQLClient));
+  }
+
+  /**
+   * Replaces the value of checkout's email address
+   *
+   * @example
+   * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+   * const email = 'user@example.com';
+   *
+   * client.checkout.updateEmail(checkoutId, email).then((checkout) => {
+   *   // Do something with the updated checkout
+   * });
+   *
+   * @param {String} checkoutId The ID of the checkout to update.
+   * @param {String} email The email address to apply to the checkout.
+   * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+   */
+  updateEmail(checkoutId, email) {
+    return this.graphQLClient
+      .send(checkoutEmailUpdateV2Mutation, {checkoutId, email})
+      .then(handleCheckoutMutation('checkoutEmailUpdateV2', this.graphQLClient));
   }
 
   /**
@@ -159,8 +185,8 @@ class CheckoutResource extends Resource {
    */
   addDiscount(checkoutId, discountCode) {
     return this.graphQLClient
-      .send(checkoutDiscountCodeApplyMutation, {checkoutId, discountCode})
-      .then(handleCheckoutMutation('checkoutDiscountCodeApply', this.graphQLClient));
+      .send(checkoutDiscountCodeApplyV2Mutation, {checkoutId, discountCode})
+      .then(handleCheckoutMutation('checkoutDiscountCodeApplyV2', this.graphQLClient));
   }
 
   /**
@@ -201,6 +227,27 @@ class CheckoutResource extends Resource {
     return this.graphQLClient
       .send(checkoutLineItemsRemoveMutation, {checkoutId, lineItemIds})
       .then(handleCheckoutMutation('checkoutLineItemsRemove', this.graphQLClient));
+  }
+
+  /**
+   * Replace line items on an existing checkout.
+   *
+   * @example
+   * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+   * const lineItems = [{variantId: 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8yOTEwNjAyMjc5Mg==', quantity: 5}];
+   *
+   * client.checkout.replaceLineItems(checkoutId, lineItems).then((checkout) => {
+   *   // Do something with the updated checkout
+   * });
+   *
+   * @param {String} checkoutId The ID of the checkout to add line items to.
+   * @param {Object[]} lineItems A list of line items to set on the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/checkoutlineiteminput|Storefront API reference} for valid input fields for each line item.
+   * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+   */
+  replaceLineItems(checkoutId, lineItems) {
+    return this.graphQLClient
+      .send(checkoutLineItemsReplaceMutation, {checkoutId, lineItems})
+      .then(handleCheckoutMutation('checkoutLineItemsReplace', this.graphQLClient));
   }
 
   /**
