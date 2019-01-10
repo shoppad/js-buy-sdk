@@ -7289,14 +7289,14 @@ var CheckoutResource = function (_Resource) {
      * });
      *
      * @param {String} checkoutId The ID of the checkout to remove the gift card from.
-     * @param (String) giftCardId The ID of the gift card to remove
+     * @param (String) appliedGiftCardId The ID of the gift card to remove
      * @return {Promise|GraphModel} A promise resolving with the updated checkout.
      */
 
   }, {
     key: 'removeGiftCard',
-    value: function removeGiftCard(checkoutId, giftCardId) {
-      return this.graphQLClient.send(query$25, { giftCardId: giftCardId, checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutGiftCardRemoveV2', this.graphQLClient));
+    value: function removeGiftCard(checkoutId, appliedGiftCardId) {
+      return this.graphQLClient.send(query$25, { appliedGiftCardId: appliedGiftCardId, checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutGiftCardRemoveV2', this.graphQLClient));
     }
 
     /**
