@@ -244,12 +244,12 @@ class CheckoutResource extends Resource {
    * });
    *
    * @param {String} checkoutId The ID of the checkout to remove the gift card from.
-   * @param (String) giftCardId The ID of the gift card to remove
+   * @param (String) appliedGiftCardId The ID of the gift card to remove
    * @return {Promise|GraphModel} A promise resolving with the updated checkout.
    */
-  removeGiftCard(checkoutId, giftCardId) {
+  removeGiftCard(checkoutId, appliedGiftCardId) {
     return this.graphQLClient
-      .send(checkoutGiftCardRemoveV2Mutation, {giftCardId, checkoutId})
+      .send(checkoutGiftCardRemoveV2Mutation, {appliedGiftCardId, checkoutId})
       .then(handleCheckoutMutation('checkoutGiftCardRemoveV2', this.graphQLClient));
   }
 
