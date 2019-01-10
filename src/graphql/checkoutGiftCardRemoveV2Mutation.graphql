@@ -3,9 +3,6 @@ mutation checkoutGiftCardRemoveV2($appliedGiftCardId: ID!, $checkoutId: ID!) {
     userErrors {
       ...UserErrorFragment
     }
-    checkoutUserErrors {
-      ...CheckoutUserErrorFragment
-    }
     checkout {
       ...CheckoutFragment
     }

@@ -3703,6 +3703,12 @@ function query$11(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -4085,6 +4091,12 @@ function query$13(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -4311,6 +4323,12 @@ function query$14(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -4535,6 +4553,12 @@ function query$15(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -4759,6 +4783,12 @@ function query$16(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -4983,6 +5013,12 @@ function query$17(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -5212,6 +5248,12 @@ function query$18(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -5444,6 +5486,12 @@ function query$19(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -5675,6 +5723,12 @@ function query$20(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -5906,6 +5960,12 @@ function query$21(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -6133,6 +6193,12 @@ function query$22(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -6357,6 +6423,12 @@ function query$23(client) {
     root.add("id");
     root.add("ready");
     root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
     root.add("availableShippingRates", function (availableShippingRates) {
       availableShippingRates.add("ready");
       availableShippingRates.add("shippingRates", function (shippingRates) {
@@ -6491,6 +6563,466 @@ function query$23(client) {
         userErrors.addFragment(spreads.UserErrorFragment);
       });
       checkoutShippingLineUpdate.add("checkout", function (checkout) {
+        checkout.addFragment(spreads.CheckoutFragment);
+      });
+    });
+  });
+  return document;
+}
+
+function query$24(client) {
+  var document = client.document();
+  var spreads = {};
+  var variables = {};
+  variables.checkoutGiftCardsAppend = {};
+  variables.checkoutGiftCardsAppend.giftCardCodes = client.variable("giftCardCodes", "[String!]!");
+  variables.checkoutGiftCardsAppend.checkoutId = client.variable("checkoutId", "ID!");
+  spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
+    root.add("id");
+    root.add("title");
+    root.add("price");
+    root.add("weight");
+    root.add("availableForSale", {
+      alias: "available"
+    });
+    root.add("sku");
+    root.add("compareAtPrice");
+    root.add("image", function (image) {
+      image.add("id");
+      image.add("originalSrc", {
+        alias: "src"
+      });
+      image.add("altText");
+    });
+    root.add("selectedOptions", function (selectedOptions) {
+      selectedOptions.add("name");
+      selectedOptions.add("value");
+    });
+  });
+  spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
+    root.add("targetSelection");
+    root.add("allocationMethod");
+    root.add("targetType");
+    root.addInlineFragmentOn("ManualDiscountApplication", function (ManualDiscountApplication) {
+      ManualDiscountApplication.add("title");
+      ManualDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("DiscountCodeApplication", function (DiscountCodeApplication) {
+      DiscountCodeApplication.add("code");
+      DiscountCodeApplication.add("applicable");
+    });
+    root.addInlineFragmentOn("ScriptDiscountApplication", function (ScriptDiscountApplication) {
+      ScriptDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("AutomaticDiscountApplication", function (AutomaticDiscountApplication) {
+      AutomaticDiscountApplication.add("title");
+    });
+  });
+  spreads.VariantWithProductFragment = document.defineFragment("VariantWithProductFragment", "ProductVariant", function (root) {
+    root.addFragment(spreads.VariantFragment);
+    root.add("product", function (product) {
+      product.add("id");
+    });
+  });
+  spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
+    root.add("field");
+    root.add("message");
+  });
+  spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
+    root.add("id");
+    root.add("address1");
+    root.add("address2");
+    root.add("city");
+    root.add("company");
+    root.add("country");
+    root.add("firstName");
+    root.add("formatted");
+    root.add("lastName");
+    root.add("latitude");
+    root.add("longitude");
+    root.add("phone");
+    root.add("province");
+    root.add("zip");
+    root.add("name");
+    root.add("countryCodeV2", {
+      alias: "countryCode"
+    });
+    root.add("provinceCode");
+  });
+  spreads.CheckoutFragment = document.defineFragment("CheckoutFragment", "Checkout", function (root) {
+    root.add("id");
+    root.add("ready");
+    root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
+    root.add("note");
+    root.add("paymentDue");
+    root.add("webUrl");
+    root.add("orderStatusUrl");
+    root.add("taxExempt");
+    root.add("taxesIncluded");
+    root.add("currencyCode");
+    root.add("totalTax");
+    root.add("subtotalPrice");
+    root.add("totalPrice");
+    root.add("completedAt");
+    root.add("createdAt");
+    root.add("updatedAt");
+    root.add("email");
+    root.add("discountApplications", {
+      args: {
+        first: 10
+      }
+    }, function (discountApplications) {
+      discountApplications.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      discountApplications.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.addFragment(spreads.DiscountApplicationFragment);
+        });
+      });
+    });
+    root.add("shippingAddress", function (shippingAddress) {
+      shippingAddress.addFragment(spreads.MailingAddressFragment);
+    });
+    root.add("shippingLine", function (shippingLine) {
+      shippingLine.add("handle");
+      shippingLine.add("price");
+      shippingLine.add("title");
+    });
+    root.add("customAttributes", function (customAttributes) {
+      customAttributes.add("key");
+      customAttributes.add("value");
+    });
+    root.add("order", function (order) {
+      order.add("id");
+      order.add("processedAt");
+      order.add("orderNumber");
+      order.add("subtotalPrice");
+      order.add("totalShippingPrice");
+      order.add("totalTax");
+      order.add("totalPrice");
+      order.add("currencyCode");
+      order.add("totalRefunded");
+      order.add("customerUrl");
+      order.add("shippingAddress", function (shippingAddress) {
+        shippingAddress.addFragment(spreads.MailingAddressFragment);
+      });
+      order.add("lineItems", {
+        args: {
+          first: 250
+        }
+      }, function (lineItems) {
+        lineItems.add("pageInfo", function (pageInfo) {
+          pageInfo.add("hasNextPage");
+          pageInfo.add("hasPreviousPage");
+        });
+        lineItems.add("edges", function (edges) {
+          edges.add("cursor");
+          edges.add("node", function (node) {
+            node.add("title");
+            node.add("variant", function (variant) {
+              variant.addFragment(spreads.VariantWithProductFragment);
+            });
+            node.add("quantity");
+            node.add("customAttributes", function (customAttributes) {
+              customAttributes.add("key");
+              customAttributes.add("value");
+            });
+          });
+        });
+      });
+    });
+    root.add("lineItems", {
+      args: {
+        first: 250
+      }
+    }, function (lineItems) {
+      lineItems.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      lineItems.add("edges", function (edges) {
+        edges.add("cursor");
+        edges.add("node", function (node) {
+          node.add("id");
+          node.add("title");
+          node.add("variant", function (variant) {
+            variant.addFragment(spreads.VariantWithProductFragment);
+          });
+          node.add("quantity");
+          node.add("customAttributes", function (customAttributes) {
+            customAttributes.add("key");
+            customAttributes.add("value");
+          });
+          node.add("discountAllocations", function (discountAllocations) {
+            discountAllocations.add("allocatedAmount", function (allocatedAmount) {
+              allocatedAmount.add("amount");
+              allocatedAmount.add("currencyCode");
+            });
+            discountAllocations.add("discountApplication", function (discountApplication) {
+              discountApplication.addFragment(spreads.DiscountApplicationFragment);
+            });
+          });
+        });
+      });
+    });
+  });
+  document.addMutation("checkoutGiftCardsAppend", [variables.checkoutGiftCardsAppend.giftCardCodes, variables.checkoutGiftCardsAppend.checkoutId], function (root) {
+    root.add("checkoutGiftCardsAppend", {
+      args: {
+        giftCardCodes: variables.checkoutGiftCardsAppend.giftCardCodes,
+        checkoutId: variables.checkoutGiftCardsAppend.checkoutId
+      }
+    }, function (checkoutGiftCardsAppend) {
+      checkoutGiftCardsAppend.add("userErrors", function (userErrors) {
+        userErrors.addFragment(spreads.UserErrorFragment);
+      });
+      checkoutGiftCardsAppend.add("checkout", function (checkout) {
+        checkout.addFragment(spreads.CheckoutFragment);
+      });
+    });
+  });
+  return document;
+}
+
+function query$25(client) {
+  var document = client.document();
+  var spreads = {};
+  var variables = {};
+  variables.checkoutGiftCardRemoveV2 = {};
+  variables.checkoutGiftCardRemoveV2.appliedGiftCardId = client.variable("appliedGiftCardId", "ID!");
+  variables.checkoutGiftCardRemoveV2.checkoutId = client.variable("checkoutId", "ID!");
+  spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
+    root.add("id");
+    root.add("title");
+    root.add("price");
+    root.add("weight");
+    root.add("availableForSale", {
+      alias: "available"
+    });
+    root.add("sku");
+    root.add("compareAtPrice");
+    root.add("image", function (image) {
+      image.add("id");
+      image.add("originalSrc", {
+        alias: "src"
+      });
+      image.add("altText");
+    });
+    root.add("selectedOptions", function (selectedOptions) {
+      selectedOptions.add("name");
+      selectedOptions.add("value");
+    });
+  });
+  spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
+    root.add("targetSelection");
+    root.add("allocationMethod");
+    root.add("targetType");
+    root.addInlineFragmentOn("ManualDiscountApplication", function (ManualDiscountApplication) {
+      ManualDiscountApplication.add("title");
+      ManualDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("DiscountCodeApplication", function (DiscountCodeApplication) {
+      DiscountCodeApplication.add("code");
+      DiscountCodeApplication.add("applicable");
+    });
+    root.addInlineFragmentOn("ScriptDiscountApplication", function (ScriptDiscountApplication) {
+      ScriptDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("AutomaticDiscountApplication", function (AutomaticDiscountApplication) {
+      AutomaticDiscountApplication.add("title");
+    });
+  });
+  spreads.VariantWithProductFragment = document.defineFragment("VariantWithProductFragment", "ProductVariant", function (root) {
+    root.addFragment(spreads.VariantFragment);
+    root.add("product", function (product) {
+      product.add("id");
+    });
+  });
+  spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
+    root.add("field");
+    root.add("message");
+  });
+  spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
+    root.add("id");
+    root.add("address1");
+    root.add("address2");
+    root.add("city");
+    root.add("company");
+    root.add("country");
+    root.add("firstName");
+    root.add("formatted");
+    root.add("lastName");
+    root.add("latitude");
+    root.add("longitude");
+    root.add("phone");
+    root.add("province");
+    root.add("zip");
+    root.add("name");
+    root.add("countryCodeV2", {
+      alias: "countryCode"
+    });
+    root.add("provinceCode");
+  });
+  spreads.CheckoutFragment = document.defineFragment("CheckoutFragment", "Checkout", function (root) {
+    root.add("id");
+    root.add("ready");
+    root.add("requiresShipping");
+    root.add("appliedGiftCards", function (appliedGiftCards) {
+      appliedGiftCards.add("amountUsed");
+      appliedGiftCards.add("balance");
+      appliedGiftCards.add("id");
+      appliedGiftCards.add("lastCharacters");
+    });
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
+    root.add("note");
+    root.add("paymentDue");
+    root.add("webUrl");
+    root.add("orderStatusUrl");
+    root.add("taxExempt");
+    root.add("taxesIncluded");
+    root.add("currencyCode");
+    root.add("totalTax");
+    root.add("subtotalPrice");
+    root.add("totalPrice");
+    root.add("completedAt");
+    root.add("createdAt");
+    root.add("updatedAt");
+    root.add("email");
+    root.add("discountApplications", {
+      args: {
+        first: 10
+      }
+    }, function (discountApplications) {
+      discountApplications.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      discountApplications.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.addFragment(spreads.DiscountApplicationFragment);
+        });
+      });
+    });
+    root.add("shippingAddress", function (shippingAddress) {
+      shippingAddress.addFragment(spreads.MailingAddressFragment);
+    });
+    root.add("shippingLine", function (shippingLine) {
+      shippingLine.add("handle");
+      shippingLine.add("price");
+      shippingLine.add("title");
+    });
+    root.add("customAttributes", function (customAttributes) {
+      customAttributes.add("key");
+      customAttributes.add("value");
+    });
+    root.add("order", function (order) {
+      order.add("id");
+      order.add("processedAt");
+      order.add("orderNumber");
+      order.add("subtotalPrice");
+      order.add("totalShippingPrice");
+      order.add("totalTax");
+      order.add("totalPrice");
+      order.add("currencyCode");
+      order.add("totalRefunded");
+      order.add("customerUrl");
+      order.add("shippingAddress", function (shippingAddress) {
+        shippingAddress.addFragment(spreads.MailingAddressFragment);
+      });
+      order.add("lineItems", {
+        args: {
+          first: 250
+        }
+      }, function (lineItems) {
+        lineItems.add("pageInfo", function (pageInfo) {
+          pageInfo.add("hasNextPage");
+          pageInfo.add("hasPreviousPage");
+        });
+        lineItems.add("edges", function (edges) {
+          edges.add("cursor");
+          edges.add("node", function (node) {
+            node.add("title");
+            node.add("variant", function (variant) {
+              variant.addFragment(spreads.VariantWithProductFragment);
+            });
+            node.add("quantity");
+            node.add("customAttributes", function (customAttributes) {
+              customAttributes.add("key");
+              customAttributes.add("value");
+            });
+          });
+        });
+      });
+    });
+    root.add("lineItems", {
+      args: {
+        first: 250
+      }
+    }, function (lineItems) {
+      lineItems.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      lineItems.add("edges", function (edges) {
+        edges.add("cursor");
+        edges.add("node", function (node) {
+          node.add("id");
+          node.add("title");
+          node.add("variant", function (variant) {
+            variant.addFragment(spreads.VariantWithProductFragment);
+          });
+          node.add("quantity");
+          node.add("customAttributes", function (customAttributes) {
+            customAttributes.add("key");
+            customAttributes.add("value");
+          });
+          node.add("discountAllocations", function (discountAllocations) {
+            discountAllocations.add("allocatedAmount", function (allocatedAmount) {
+              allocatedAmount.add("amount");
+              allocatedAmount.add("currencyCode");
+            });
+            discountAllocations.add("discountApplication", function (discountApplication) {
+              discountApplication.addFragment(spreads.DiscountApplicationFragment);
+            });
+          });
+        });
+      });
+    });
+  });
+  document.addMutation("checkoutGiftCardRemoveV2", [variables.checkoutGiftCardRemoveV2.appliedGiftCardId, variables.checkoutGiftCardRemoveV2.checkoutId], function (root) {
+    root.add("checkoutGiftCardRemoveV2", {
+      args: {
+        appliedGiftCardId: variables.checkoutGiftCardRemoveV2.appliedGiftCardId,
+        checkoutId: variables.checkoutGiftCardRemoveV2.checkoutId
+      }
+    }, function (checkoutGiftCardRemoveV2) {
+      checkoutGiftCardRemoveV2.add("userErrors", function (userErrors) {
+        userErrors.addFragment(spreads.UserErrorFragment);
+      });
+      checkoutGiftCardRemoveV2.add("checkout", function (checkout) {
         checkout.addFragment(spreads.CheckoutFragment);
       });
     });
@@ -6711,6 +7243,51 @@ var CheckoutResource = function (_Resource) {
     key: 'removeDiscount',
     value: function removeDiscount(checkoutId) {
       return this.graphQLClient.send(query$20, { checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutDiscountCodeRemove', this.graphQLClient));
+    }
+
+    /**
+     * Applies a gift card to an existing checkout using a gift card code.
+     *
+     * @example
+     * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+     * const giftCardCode = 'ABCD-EFGH-1234-5678';
+     *
+     * client.checkout.addGiftCard(checkoutId, discountCode).then((checkout) => {
+     *   // Do something with the updated checkout
+     * });
+     *
+     * @param {String} checkoutId The ID of the checkout to add discount to.
+     * @param {String} giftCardCode The gift card code to apply to the checkout.
+     * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+     */
+
+  }, {
+    key: 'addGiftCard',
+    value: function addGiftCard(checkoutId, giftCardCode) {
+      var giftCardCodes = [giftCardCode];
+      return this.graphQLClient.send(query$24, { checkoutId: checkoutId, giftCardCodes: giftCardCodes }).then(handleCheckoutMutation('checkoutGiftCardsAppend', this.graphQLClient));
+    }
+
+    /**
+     * Removes a gift card from an existing checkout.
+     *
+     * @example
+     * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
+     * const giftCardId = '59228094564'
+     *
+     * client.checkout.removeGiftCard(checkoutId, giftCardId).then((checkout) => {
+     *   // Do something with the updated checkout
+     * });
+     *
+     * @param {String} checkoutId The ID of the checkout to remove the gift card from.
+     * @param (String) giftCardId The ID of the gift card to remove
+     * @return {Promise|GraphModel} A promise resolving with the updated checkout.
+     */
+
+  }, {
+    key: 'removeGiftCard',
+    value: function removeGiftCard(checkoutId, giftCardId) {
+      return this.graphQLClient.send(query$25, { giftCardId: giftCardId, checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutGiftCardRemoveV2', this.graphQLClient));
     }
 
     /**
@@ -7371,6 +7948,7 @@ var Checkout = {
   "name": "Checkout",
   "kind": "OBJECT",
   "fieldBaseTypes": {
+    "appliedGiftCards": "AppliedGiftCard",
     "availableShippingRates": "AvailableShippingRates",
     "completedAt": "DateTime",
     "createdAt": "DateTime",
@@ -7454,6 +8032,18 @@ var AvailableShippingRates = {
   "implementsNode": false
 };
 
+var AppliedGiftCard = {
+  "name": "AppliedGiftCard",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "amountUsed": "Money",
+    "balance": "Money",
+    "id": "ID",
+    "lastCharacters": "String"
+  },
+  "implementsNode": true
+};
+
 var Shop = {
   "name": "Shop",
   "kind": "OBJECT",
@@ -7502,6 +8092,8 @@ var Mutation$1 = {
     "checkoutDiscountCodeApplyV2": "CheckoutDiscountCodeApplyV2Payload",
     "checkoutDiscountCodeRemove": "CheckoutDiscountCodeRemovePayload",
     "checkoutEmailUpdateV2": "CheckoutEmailUpdateV2Payload",
+    "checkoutGiftCardRemoveV2": "CheckoutGiftCardRemoveV2Payload",
+    "checkoutGiftCardsAppend": "CheckoutGiftCardsAppendPayload",
     "checkoutLineItemsAdd": "CheckoutLineItemsAddPayload",
     "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
     "checkoutLineItemsReplace": "CheckoutLineItemsReplacePayload",
@@ -7612,8 +8204,28 @@ var CheckoutDiscountCodeRemovePayload = {
   "implementsNode": false
 };
 
-var CheckoutLineItemsUpdatePayload = {
-  "name": "CheckoutLineItemsUpdatePayload",
+var CheckoutGiftCardsAppendPayload = {
+  "name": "CheckoutGiftCardsAppendPayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutGiftCardRemoveV2Payload = {
+  "name": "CheckoutGiftCardRemoveV2Payload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutLineItemsAddPayload = {
+  "name": "CheckoutLineItemsAddPayload",
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "checkout": "Checkout",
@@ -7782,6 +8394,7 @@ Types.types["CheckoutLineItemEdge"] = CheckoutLineItemEdge;
 Types.types["CheckoutLineItem"] = CheckoutLineItem;
 Types.types["ShippingRate"] = ShippingRate;
 Types.types["AvailableShippingRates"] = AvailableShippingRates;
+Types.types["AppliedGiftCard"] = AppliedGiftCard;
 Types.types["Shop"] = Shop;
 Types.types["Domain"] = Domain;
 Types.types["ShopPolicy"] = ShopPolicy;
@@ -7795,6 +8408,8 @@ Types.types["CheckoutDiscountCodeApplyV2Payload"] = CheckoutDiscountCodeApplyV2P
 Types.types["CheckoutCreatePayload"] = CheckoutCreatePayload;
 Types.types["CheckoutEmailUpdateV2Payload"] = CheckoutEmailUpdateV2Payload;
 Types.types["CheckoutDiscountCodeRemovePayload"] = CheckoutDiscountCodeRemovePayload;
+Types.types["CheckoutGiftCardsAppendPayload"] = CheckoutGiftCardsAppendPayload;
+Types.types["CheckoutGiftCardRemoveV2Payload"] = CheckoutGiftCardRemoveV2Payload;
 Types.types["CheckoutLineItemsAddPayload"] = CheckoutLineItemsAddPayload;
 Types.types["CheckoutLineItemsRemovePayload"] = CheckoutLineItemsRemovePayload;
 Types.types["CheckoutLineItemsUpdatePayload"] = CheckoutLineItemsUpdatePayload;

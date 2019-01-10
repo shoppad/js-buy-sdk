@@ -3,9 +3,6 @@ mutation checkoutGiftCardsAppend($giftCardCodes: [String!]!, $checkoutId: ID!) {
     userErrors {
       ...UserErrorFragment
     }
-    checkoutUserErrors {
-      ...CheckoutUserErrorFragment
-    }
     checkout {
       ...CheckoutFragment
     }
