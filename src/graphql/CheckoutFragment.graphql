@@ -22,6 +22,12 @@ fragment CheckoutFragment on Checkout {
   id
   ready
   requiresShipping
+  appliedGiftCards {
+    amountUsed
+    balance
+    id
+    lastCharacters
+  }
   availableShippingRates {
     ready
     shippingRates {

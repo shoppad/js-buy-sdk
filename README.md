@@ -207,19 +207,38 @@ client.checkout.addDiscount(checkoutId, discountCode).then(checkout => {
 
 ### Removing a Discount
 ```javascript
-<<<<<<< HEAD
-const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
 
-client.checkout.removeDiscount(checkoutId).then((checkout) => {
-  // Do something with the updated checkout
-=======
 const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
 
 // Removes the applied discount from an existing checkout.
 client.checkout.removeDiscount(checkoutId).then(checkout => {
   // Do something with the updated checkout
   console.log(checkout);
->>>>>>> upstream/master
+});
+```
+
+### Adding a Gift Card
+```javascript
+const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
+const discountCode = 'ABCD-EFGH-1234-5678';
+
+// Add a gift card code to the checkout
+client.checkout.addGiftCard(checkoutId, discountCode).then(checkout => {
+  // Do something with the updated checkout
+  console.log(checkout);
+});
+```
+
+### Removing a Gift Card
+```javascript
+
+const checkoutId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0SW1hZ2UvMTgyMTc3ODc1OTI='; // ID of an existing checkout
+const giftCardId = 'giftCardId';
+
+// Removes the applied gift card from an existing checkout.
+client.checkout.removeGiftCard(checkoutId, giftCardId).then(checkout => {
+  // Do something with the updated checkout
+  console.log(checkout);
 });
 ```
 
