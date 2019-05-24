@@ -277,6 +277,9 @@ client.checkout.removeGiftCard(checkoutId, giftCardId).then(checkout => {
 });
 ```
 
+### Disassociating a customer from a checkout
+@TODO
+
 ## Example Apps
 
 For more complete examples of using JS Buy SDK, check out our [storefront-api-examples](https://github.com/Shopify/storefront-api-examples) project.

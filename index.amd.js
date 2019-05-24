@@ -7032,6 +7032,30 @@ function query$25(client) {
   return document;
 }
 
+function query$26(client) {
+  var document = client.document();
+  var variables = {};
+  variables.checkoutCustomerDisassociateV2 = {};
+  variables.checkoutCustomerDisassociateV2.checkoutId = client.variable("checkoutId", "ID!");
+  document.addMutation("checkoutCustomerDisassociateV2", [variables.checkoutCustomerDisassociateV2.checkoutId], function (root) {
+    root.add("checkoutCustomerDisassociateV2", {
+      args: {
+        checkoutId: variables.checkoutCustomerDisassociateV2.checkoutId
+      }
+    }, function (checkoutCustomerDisassociateV2) {
+      checkoutCustomerDisassociateV2.add("checkout", function (checkout) {
+        checkout.add("id");
+      });
+      checkoutCustomerDisassociateV2.add("checkoutUserErrors", function (checkoutUserErrors) {
+        checkoutUserErrors.add("code");
+        checkoutUserErrors.add("field");
+        checkoutUserErrors.add("message");
+      });
+    });
+  });
+  return document;
+}
+
 // GraphQL
 /**
  * The JS Buy SDK checkout resource
@@ -7397,10 +7421,30 @@ var CheckoutResource = function (_Resource) {
     value: function updateShippingAddress(checkoutId, shippingAddress) {
       return this.graphQLClient.send(query$22, { checkoutId: checkoutId, shippingAddress: shippingAddress }).then(handleCheckoutMutation('checkoutShippingAddressUpdate', this.graphQLClient));
     }
+
+    /**
+     * Updates shipping lines on an existing checkout
+     * @param checkoutId
+     * @param shippingRateHandle
+     * @returns {*|PromiseLike<T | never>|Promise<T | never>}
+     */
+
   }, {
     key: 'updateShippingLines',
     value: function updateShippingLines(checkoutId, shippingRateHandle) {
       return this.graphQLClient.send(query$23, { checkoutId: checkoutId, shippingRateHandle: shippingRateHandle }).then(handleCheckoutMutation('checkoutShippingLineUpdate', this.graphQLClient));
+    }
+
+    /**
+     * Disassociates a customer from a checkout
+     * @param checkoutId
+     * @returns {*|PromiseLike<T | never>|Promise<T | never>}
+     */
+
+  }, {
+    key: 'disassociateCustomer',
+    value: function disassociateCustomer(checkoutId) {
+      return this.graphQLClient.send(query$26, { checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutCustomerDisassociateV2', this.graphQLClient));
     }
   }]);
   return CheckoutResource;
@@ -8091,6 +8135,7 @@ var Mutation$1 = {
   "fieldBaseTypes": {
     "checkoutAttributesUpdateV2": "CheckoutAttributesUpdateV2Payload",
     "checkoutCreate": "CheckoutCreatePayload",
+    "checkoutCustomerDisassociateV2": "CheckoutCustomerDisassociateV2Payload",
     "checkoutDiscountCodeApplyV2": "CheckoutDiscountCodeApplyV2Payload",
     "checkoutDiscountCodeRemove": "CheckoutDiscountCodeRemovePayload",
     "checkoutEmailUpdateV2": "CheckoutEmailUpdateV2Payload",
@@ -8160,6 +8205,16 @@ var CheckoutUserError = {
 var CheckoutErrorCode = {
   "name": "CheckoutErrorCode",
   "kind": "ENUM"
+};
+
+var CheckoutCustomerDisassociateV2Payload = {
+  "name": "CheckoutCustomerDisassociateV2Payload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "checkoutUserErrors": "CheckoutUserError"
+  },
+  "implementsNode": false
 };
 
 var CheckoutDiscountCodeApplyV2Payload = {
@@ -8406,6 +8461,7 @@ Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpd
 Types.types["CheckoutAttributesUpdateV2Payload"] = CheckoutAttributesUpdateV2Payload;
 Types.types["CheckoutUserError"] = CheckoutUserError;
 Types.types["CheckoutErrorCode"] = CheckoutErrorCode;
+Types.types["CheckoutCustomerDisassociateV2Payload"] = CheckoutCustomerDisassociateV2Payload;
 Types.types["CheckoutDiscountCodeApplyV2Payload"] = CheckoutDiscountCodeApplyV2Payload;
 Types.types["CheckoutCreatePayload"] = CheckoutCreatePayload;
 Types.types["CheckoutEmailUpdateV2Payload"] = CheckoutEmailUpdateV2Payload;

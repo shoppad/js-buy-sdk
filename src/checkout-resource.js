@@ -18,6 +18,7 @@ import checkoutShippingAddressUpdateMutation from './graphql/checkoutShippingAdd
 import checkoutShippingLineUpdateMutation from './graphql/checkoutShippingLineUpdateMutation.graphql';
 import checkoutGiftCardsAppendMutation from './graphql/checkoutGiftCardsAppendMutation.graphql';
 import checkoutGiftCardRemoveV2Mutation from './graphql/checkoutGiftCardRemoveV2Mutation.graphql';
+import checkoutCustomerDisassociateV2Mutation from './graphql/checkoutCustomerDisassociateV2Mutation.graphql';
 
 /**
  * The JS Buy SDK checkout resource
@@ -353,6 +354,29 @@ class CheckoutResource extends Resource {
     return this.graphQLClient
       .send(checkoutShippingAddressUpdateMutation, {checkoutId, shippingAddress})
       .then(handleCheckoutMutation('checkoutShippingAddressUpdate', this.graphQLClient));
+  }
+
+  /**
+   * Updates shipping lines on an existing checkout
+   * @param checkoutId
+   * @param shippingRateHandle
+   * @returns {*|PromiseLike<T | never>|Promise<T | never>}
+   */
+  updateShippingLines(checkoutId, shippingRateHandle) {
+    return this.graphQLClient
+      .send(checkoutShippingLineUpdateMutation, {checkoutId, shippingRateHandle})
+      .then(handleCheckoutMutation('checkoutShippingLineUpdate', this.graphQLClient));
+  }
+
+  /**
+   * Disassociates a customer from a checkout
+   * @param checkoutId
+   * @returns {*|PromiseLike<T | never>|Promise<T | never>}
+   */
+  disassociateCustomer(checkoutId) {
+    return this.graphQLClient
+      .send(checkoutCustomerDisassociateV2Mutation, {checkoutId})
+      .then(handleCheckoutMutation('checkoutCustomerDisassociateV2', this.graphQLClient));
   }
 }
 
