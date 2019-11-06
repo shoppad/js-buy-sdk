@@ -3807,6 +3807,34 @@ function query$12(client) {
     root.add("countryCode");
     root.add("provinceCode");
   });
+  spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
+    root.add("targetSelection");
+    root.add("allocationMethod");
+    root.add("targetType");
+    root.add("value", function (value) {
+      value.addInlineFragmentOn("MoneyV2", function (MoneyV2) {
+        MoneyV2.add("amount");
+        MoneyV2.add("currencyCode");
+      });
+      value.addInlineFragmentOn("PricingPercentageValue", function (PricingPercentageValue) {
+        PricingPercentageValue.add("percentage");
+      });
+    });
+    root.addInlineFragmentOn("ManualDiscountApplication", function (ManualDiscountApplication) {
+      ManualDiscountApplication.add("title");
+      ManualDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("DiscountCodeApplication", function (DiscountCodeApplication) {
+      DiscountCodeApplication.add("code");
+      DiscountCodeApplication.add("applicable");
+    });
+    root.addInlineFragmentOn("ScriptDiscountApplication", function (ScriptDiscountApplication) {
+      ScriptDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("AutomaticDiscountApplication", function (AutomaticDiscountApplication) {
+      AutomaticDiscountApplication.add("title");
+    });
+  });
   spreads.CheckoutWithAddressFragment = document.defineFragment("CheckoutWithAddressFragment", "Checkout", function (root) {
     root.add("id");
     root.add("ready");
@@ -3816,6 +3844,21 @@ function query$12(client) {
         shippingRates.add("handle");
         shippingRates.add("price");
         shippingRates.add("title");
+      });
+    });
+    root.add("discountApplications", {
+      args: {
+        first: 10
+      }
+    }, function (discountApplications) {
+      discountApplications.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      discountApplications.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.addFragment(spreads.DiscountApplicationFragment);
+        });
       });
     });
     root.add("requiresShipping");
@@ -5653,25 +5696,23 @@ var CheckoutResource = function (_Resource) {
     }
 
     /**
-     * Applies a discount to an existing checkout using a discount code.
+     * Removes a discount from an existing checkout.
      *
      * @example
      * const checkoutId = 'Z2lkOi8vc2hvcGlmeS9DaGVja291dC9kMTZmM2EzMDM4Yjc4N=';
-     * const discountCode = 'best-discount-ever';
      *
-     * client.checkout.addDiscount(checkoutId, discountCode).then((checkout) => {
+     * client.checkout.removeDiscount(checkoutId).then((checkout) => {
      *   // Do something with the updated checkout
      * });
      *
      * @param {String} checkoutId The ID of the checkout to add discount to.
-     * @param {String} discountCode The discount code to apply to the checkout.
      * @return {Promise|GraphModel} A promise resolving with the updated checkout.
      */
 
   }, {
     key: 'removeDiscount',
-    value: function removeDiscount(checkoutId, discountCode) {
-      return this.graphQLClient.send(query$19, { checkoutId: checkoutId, discountCode: discountCode }).then(handleCheckoutMutation('checkoutDiscountCodeRemove', this.graphQLClient));
+    value: function removeDiscount(checkoutId) {
+      return this.graphQLClient.send(query$19, { checkoutId: checkoutId }).then(handleCheckoutMutation('checkoutDiscountCodeRemove', this.graphQLClient));
     }
 
     /**
@@ -5828,7 +5869,17 @@ var ImageResource = function (_Resource) {
   return ImageResource;
 }(Resource);
 
-var version = "1.6.0";
+var version = "v1.6.1-beta1.2";
+
+var Boolean$1 = {
+  "name": "Boolean",
+  "kind": "SCALAR"
+};
+
+var String$1 = {
+  "name": "String",
+  "kind": "SCALAR"
+};
 
 var QueryRoot = {
   "name": "QueryRoot",
@@ -5845,21 +5896,11 @@ var Node = {
   "name": "Node",
   "kind": "INTERFACE",
   "fieldBaseTypes": {},
-  "possibleTypes": ["AppliedGiftCard", "Article", "Blog", "Checkout", "CheckoutLineItem", "Collection", "Comment", "MailingAddress", "Order", "Payment", "Product", "ProductOption", "ProductVariant", "ShopPolicy"]
+  "possibleTypes": ["AppliedGiftCard", "Article", "Blog", "Checkout", "CheckoutLineItem", "Collection", "Comment", "MailingAddress", "Metafield", "Order", "Page", "Payment", "Product", "ProductOption", "ProductVariant", "ShopPolicy"]
 };
 
 var ID = {
   "name": "ID",
-  "kind": "SCALAR"
-};
-
-var String$1 = {
-  "name": "String",
-  "kind": "SCALAR"
-};
-
-var Boolean$1 = {
-  "name": "Boolean",
   "kind": "SCALAR"
 };
 
@@ -5938,6 +5979,21 @@ var Money = {
   "kind": "SCALAR"
 };
 
+var MoneyV2 = {
+  "name": "MoneyV2",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "amount": "Decimal",
+    "currencyCode": "CurrencyCode"
+  },
+  "implementsNode": false
+};
+
+var Decimal = {
+  "name": "Decimal",
+  "kind": "SCALAR"
+};
+
 var CurrencyCode = {
   "name": "CurrencyCode",
   "kind": "ENUM"
@@ -5946,6 +6002,47 @@ var CurrencyCode = {
 var URL = {
   "name": "URL",
   "kind": "SCALAR"
+};
+
+var DiscountApplication = {
+  "name": "DiscountApplication",
+  "kind": "INTERFACE",
+  "fieldBaseTypes": {
+    "allocationMethod": "DiscountApplicationAllocationMethod",
+    "targetSelection": "DiscountApplicationTargetSelection",
+    "targetType": "DiscountApplicationTargetType",
+    "value": "PricingValue"
+  },
+  "possibleTypes": ["AutomaticDiscountApplication", "DiscountCodeApplication", "ManualDiscountApplication", "ScriptDiscountApplication"]
+};
+
+var DiscountApplicationAllocationMethod = {
+  "name": "DiscountApplicationAllocationMethod",
+  "kind": "ENUM"
+};
+
+var DiscountApplicationTargetSelection = {
+  "name": "DiscountApplicationTargetSelection",
+  "kind": "ENUM"
+};
+
+var DiscountApplicationTargetType = {
+  "name": "DiscountApplicationTargetType",
+  "kind": "ENUM"
+};
+
+var PricingValue = {
+  "name": "PricingValue",
+  "kind": "UNION"
+};
+
+var PricingPercentageValue = {
+  "name": "PricingPercentageValue",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "percentage": "Float"
+  },
+  "implementsNode": false
 };
 
 var OrderLineItemConnection = {
@@ -5996,27 +6093,6 @@ var ProductVariant = {
     "weight": "Float"
   },
   "implementsNode": true
-};
-
-var Image = {
-  "name": "Image",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "altText": "String",
-    "id": "ID",
-    "src": "URL"
-  },
-  "implementsNode": false
-};
-
-var SelectedOption = {
-  "name": "SelectedOption",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "name": "String",
-    "value": "String"
-  },
-  "implementsNode": false
 };
 
 var Product = {
@@ -6081,6 +6157,17 @@ var Collection = {
 var HTML = {
   "name": "HTML",
   "kind": "SCALAR"
+};
+
+var Image = {
+  "name": "Image",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "altText": "String",
+    "id": "ID",
+    "src": "URL"
+  },
+  "implementsNode": false
 };
 
 var ProductConnection = {
@@ -6153,6 +6240,16 @@ var ProductVariantEdge = {
   "implementsNode": false
 };
 
+var SelectedOption = {
+  "name": "SelectedOption",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "name": "String",
+    "value": "String"
+  },
+  "implementsNode": false
+};
+
 var Attribute = {
   "name": "Attribute",
   "kind": "OBJECT",
@@ -6163,90 +6260,21 @@ var Attribute = {
   "implementsNode": false
 };
 
-var Shop = {
-  "name": "Shop",
+var DiscountApplicationConnection = {
+  "name": "DiscountApplicationConnection",
   "kind": "OBJECT",
   "fieldBaseTypes": {
-    "collectionByHandle": "Collection",
-    "collections": "CollectionConnection",
-    "currencyCode": "CurrencyCode",
-    "description": "String",
-    "moneyFormat": "String",
-    "name": "String",
-    "primaryDomain": "Domain",
-    "privacyPolicy": "ShopPolicy",
-    "productByHandle": "Product",
-    "products": "ProductConnection",
-    "refundPolicy": "ShopPolicy",
-    "termsOfService": "ShopPolicy"
+    "edges": "DiscountApplicationEdge",
+    "pageInfo": "PageInfo"
   },
   "implementsNode": false
 };
 
-var Domain = {
-  "name": "Domain",
+var DiscountApplicationEdge = {
+  "name": "DiscountApplicationEdge",
   "kind": "OBJECT",
   "fieldBaseTypes": {
-    "host": "String",
-    "sslEnabled": "Boolean",
-    "url": "URL"
-  },
-  "implementsNode": false
-};
-
-var ShopPolicy = {
-  "name": "ShopPolicy",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "body": "String",
-    "id": "ID",
-    "title": "String",
-    "url": "URL"
-  },
-  "implementsNode": true
-};
-
-var Mutation$1 = {
-  "name": "Mutation",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "checkoutAttributesUpdate": "CheckoutAttributesUpdatePayload",
-    "checkoutCreate": "CheckoutCreatePayload",
-    "checkoutLineItemsAdd": "CheckoutLineItemsAddPayload",
-    "checkoutDiscountCodeApply": "CheckoutLineItemsAddPayload",
-    "checkoutDiscountCodeRemove": "CheckoutLineItemsAddPayload",
-    "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
-    "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
-    "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload",
-    "checkoutShippingLineUpdate": "CheckoutShippingLineUpdatePayload"
-  },
-  "implementsNode": false,
-  "relayInputObjectBaseTypes": {
-    "checkoutAttributesUpdate": "CheckoutAttributesUpdateInput",
-    "checkoutCreate": "CheckoutCreateInput",
-    "customerAccessTokenCreate": "CustomerAccessTokenCreateInput",
-    "customerActivate": "CustomerActivateInput",
-    "customerCreate": "CustomerCreateInput",
-    "customerReset": "CustomerResetInput"
-  }
-};
-
-var CheckoutAttributesUpdatePayload = {
-  "name": "CheckoutAttributesUpdatePayload",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "checkout": "Checkout",
-    "userErrors": "UserError"
-  },
-  "implementsNode": false
-};
-
-var UserError = {
-  "name": "UserError",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "field": "String",
-    "message": "String"
+    "node": "DiscountApplication"
   },
   "implementsNode": false
 };
@@ -6260,6 +6288,7 @@ var Checkout = {
     "createdAt": "DateTime",
     "currencyCode": "CurrencyCode",
     "customAttributes": "Attribute",
+    "discountApplications": "DiscountApplicationConnection",
     "id": "ID",
     "lineItems": "CheckoutLineItemConnection",
     "note": "String",
@@ -6335,8 +6364,127 @@ var AvailableShippingRates = {
   "implementsNode": false
 };
 
+var Shop = {
+  "name": "Shop",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "collectionByHandle": "Collection",
+    "collections": "CollectionConnection",
+    "currencyCode": "CurrencyCode",
+    "description": "String",
+    "moneyFormat": "String",
+    "name": "String",
+    "primaryDomain": "Domain",
+    "privacyPolicy": "ShopPolicy",
+    "productByHandle": "Product",
+    "products": "ProductConnection",
+    "refundPolicy": "ShopPolicy",
+    "termsOfService": "ShopPolicy"
+  },
+  "implementsNode": false
+};
+
+var Domain = {
+  "name": "Domain",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "host": "String",
+    "sslEnabled": "Boolean",
+    "url": "URL"
+  },
+  "implementsNode": false
+};
+
+var ShopPolicy = {
+  "name": "ShopPolicy",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "body": "String",
+    "id": "ID",
+    "title": "String",
+    "url": "URL"
+  },
+  "implementsNode": true
+};
+
+var Mutation$1 = {
+  "name": "Mutation",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkoutAttributesUpdate": "CheckoutAttributesUpdatePayload",
+    "checkoutCreate": "CheckoutCreatePayload",
+    "checkoutDiscountCodeApply": "CheckoutDiscountCodeApplyPayload",
+    "checkoutDiscountCodeRemove": "CheckoutDiscountCodeRemovePayload",
+    "checkoutLineItemsAdd": "CheckoutLineItemsAddPayload",
+    "checkoutLineItemsRemove": "CheckoutLineItemsRemovePayload",
+    "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
+    "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload",
+    "checkoutShippingLineUpdate": "CheckoutShippingLineUpdatePayload"
+  },
+  "implementsNode": false,
+  "relayInputObjectBaseTypes": {
+    "checkoutAttributesUpdate": "CheckoutAttributesUpdateInput",
+    "checkoutAttributesUpdateV2": "CheckoutAttributesUpdateV2Input",
+    "checkoutCreate": "CheckoutCreateInput",
+    "customerAccessTokenCreate": "CustomerAccessTokenCreateInput",
+    "customerActivate": "CustomerActivateInput",
+    "customerCreate": "CustomerCreateInput",
+    "customerReset": "CustomerResetInput"
+  }
+};
+
+var CheckoutAttributesUpdatePayload = {
+  "name": "CheckoutAttributesUpdatePayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var UserError = {
+  "name": "UserError",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "field": "String",
+    "message": "String"
+  },
+  "implementsNode": false
+};
+
+var CheckoutDiscountCodeApplyPayload = {
+  "name": "CheckoutDiscountCodeApplyPayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutShippingAddressUpdatePayload = {
+  "name": "CheckoutShippingAddressUpdatePayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
 var CheckoutCreatePayload = {
   "name": "CheckoutCreatePayload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "userErrors": "UserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutDiscountCodeRemovePayload = {
+  "name": "CheckoutDiscountCodeRemovePayload",
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "checkout": "Checkout",
@@ -6375,16 +6523,6 @@ var CheckoutLineItemsUpdatePayload = {
   "implementsNode": false
 };
 
-var CheckoutShippingAddressUpdatePayload = {
-  "name": "CheckoutShippingAddressUpdatePayload",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "checkout": "Checkout",
-    "userErrors": "UserError"
-  },
-  "implementsNode": false
-};
-
 var CheckoutShippingLineUpdatePayload = {
   "name": "CheckoutShippingLineUpdatePayload",
   "kind": "OBJECT",
@@ -6395,14 +6533,52 @@ var CheckoutShippingLineUpdatePayload = {
   "implementsNode": false
 };
 
+var DiscountCodeApplication = {
+  "name": "DiscountCodeApplication",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "applicable": "Boolean",
+    "code": "String"
+  },
+  "implementsNode": false
+};
+
+var ManualDiscountApplication = {
+  "name": "ManualDiscountApplication",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "description": "String",
+    "title": "String"
+  },
+  "implementsNode": false
+};
+
+var ScriptDiscountApplication = {
+  "name": "ScriptDiscountApplication",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "description": "String"
+  },
+  "implementsNode": false
+};
+
+var AutomaticDiscountApplication = {
+  "name": "AutomaticDiscountApplication",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "title": "String"
+  },
+  "implementsNode": false
+};
+
 var Types = {
   types: {}
 };
+Types.types["Boolean"] = Boolean$1;
+Types.types["String"] = String$1;
 Types.types["QueryRoot"] = QueryRoot;
 Types.types["Node"] = Node;
 Types.types["ID"] = ID;
-Types.types["String"] = String$1;
-Types.types["Boolean"] = Boolean$1;
 Types.types["DateTime"] = DateTime;
 Types.types["MailingAddress"] = MailingAddress;
 Types.types["Float"] = Float;
@@ -6410,19 +6586,26 @@ Types.types["PageInfo"] = PageInfo;
 Types.types["Int"] = Int;
 Types.types["Order"] = Order;
 Types.types["Money"] = Money;
+Types.types["MoneyV2"] = MoneyV2;
+Types.types["Decimal"] = Decimal;
 Types.types["CurrencyCode"] = CurrencyCode;
 Types.types["URL"] = URL;
+Types.types["DiscountApplication"] = DiscountApplication;
+Types.types["DiscountApplicationAllocationMethod"] = DiscountApplicationAllocationMethod;
+Types.types["DiscountApplicationTargetSelection"] = DiscountApplicationTargetSelection;
+Types.types["DiscountApplicationTargetType"] = DiscountApplicationTargetType;
+Types.types["PricingValue"] = PricingValue;
+Types.types["PricingPercentageValue"] = PricingPercentageValue;
 Types.types["OrderLineItemConnection"] = OrderLineItemConnection;
 Types.types["OrderLineItemEdge"] = OrderLineItemEdge;
 Types.types["OrderLineItem"] = OrderLineItem;
 Types.types["ProductVariant"] = ProductVariant;
-Types.types["Image"] = Image;
-Types.types["SelectedOption"] = SelectedOption;
 Types.types["Product"] = Product;
 Types.types["CollectionConnection"] = CollectionConnection;
 Types.types["CollectionEdge"] = CollectionEdge;
 Types.types["Collection"] = Collection;
 Types.types["HTML"] = HTML;
+Types.types["Image"] = Image;
 Types.types["ProductConnection"] = ProductConnection;
 Types.types["ProductEdge"] = ProductEdge;
 Types.types["ImageConnection"] = ImageConnection;
@@ -6430,25 +6613,34 @@ Types.types["ImageEdge"] = ImageEdge;
 Types.types["ProductOption"] = ProductOption;
 Types.types["ProductVariantConnection"] = ProductVariantConnection;
 Types.types["ProductVariantEdge"] = ProductVariantEdge;
+Types.types["SelectedOption"] = SelectedOption;
 Types.types["Attribute"] = Attribute;
-Types.types["Shop"] = Shop;
-Types.types["Domain"] = Domain;
-Types.types["ShopPolicy"] = ShopPolicy;
-Types.types["Mutation"] = Mutation$1;
-Types.types["CheckoutAttributesUpdatePayload"] = CheckoutAttributesUpdatePayload;
-Types.types["UserError"] = UserError;
+Types.types["DiscountApplicationConnection"] = DiscountApplicationConnection;
+Types.types["DiscountApplicationEdge"] = DiscountApplicationEdge;
 Types.types["Checkout"] = Checkout;
 Types.types["CheckoutLineItemConnection"] = CheckoutLineItemConnection;
 Types.types["CheckoutLineItemEdge"] = CheckoutLineItemEdge;
 Types.types["CheckoutLineItem"] = CheckoutLineItem;
 Types.types["ShippingRate"] = ShippingRate;
 Types.types["AvailableShippingRates"] = AvailableShippingRates;
+Types.types["Shop"] = Shop;
+Types.types["Domain"] = Domain;
+Types.types["ShopPolicy"] = ShopPolicy;
+Types.types["Mutation"] = Mutation$1;
+Types.types["CheckoutAttributesUpdatePayload"] = CheckoutAttributesUpdatePayload;
+Types.types["UserError"] = UserError;
+Types.types["CheckoutDiscountCodeApplyPayload"] = CheckoutDiscountCodeApplyPayload;
+Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
 Types.types["CheckoutCreatePayload"] = CheckoutCreatePayload;
+Types.types["CheckoutDiscountCodeRemovePayload"] = CheckoutDiscountCodeRemovePayload;
 Types.types["CheckoutLineItemsAddPayload"] = CheckoutLineItemsAddPayload;
 Types.types["CheckoutLineItemsRemovePayload"] = CheckoutLineItemsRemovePayload;
 Types.types["CheckoutLineItemsUpdatePayload"] = CheckoutLineItemsUpdatePayload;
-Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
 Types.types["CheckoutShippingLineUpdatePayload"] = CheckoutShippingLineUpdatePayload;
+Types.types["DiscountCodeApplication"] = DiscountCodeApplication;
+Types.types["ManualDiscountApplication"] = ManualDiscountApplication;
+Types.types["ScriptDiscountApplication"] = ScriptDiscountApplication;
+Types.types["AutomaticDiscountApplication"] = AutomaticDiscountApplication;
 Types.queryType = "QueryRoot";
 Types.mutationType = "Mutation";
 Types.subscriptionType = null;
