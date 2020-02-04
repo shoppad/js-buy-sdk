@@ -1,5 +1,5 @@
 /*
-The MIT License (MIT)
+      The MIT License (MIT)
 
 Copyright (c) 2016 Shopify Inc.
 
@@ -22,7 +22,7 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-*/
+      */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -166,13 +166,17 @@ function deepFreezeCopyExcept(predicate, structure) {
 }
 
 function schemaForType(typeBundle, typeName) {
+  var typeSchema = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
   var type = typeBundle.types[typeName];
 
   if (type) {
     return type;
+  } else if (typeSchema && typeSchema.kind === 'INTERFACE') {
+    return typeSchema;
   }
 
-  throw new Error("No type of " + typeName + " found in schema");
+  throw new Error('No type of ' + typeName + ' found in schema');
 }
 
 var classCallCheck = function classCallCheck(instance, Constructor) {
@@ -440,6 +444,21 @@ function formatArgs(args) {
   return ' (' + formatObject(args) + ')';
 }
 
+function formatDirectives(directives) {
+  if (!Object.keys(directives).length) {
+    return '';
+  }
+
+  var directiveStrings = Object.keys(directives).map(function (key) {
+    var directiveArgs = directives[key];
+    var arg = directiveArgs && Object.keys(directiveArgs).length ? '(' + formatObject(directiveArgs) + ')' : '';
+
+    return '@' + key + arg;
+  });
+
+  return ' ' + join.apply(undefined, toConsumableArray(directiveStrings));
+}
+
 // eslint-disable-next-line no-empty-function
 var noop = function noop() {};
 
@@ -485,6 +504,7 @@ function parseFieldCreationArgs(creationArgs) {
 }
 
 var emptyArgs = Object.freeze({});
+var emptyDirectives = Object.freeze({});
 
 var Field = function () {
 
@@ -497,6 +517,7 @@ var Field = function () {
    * @param {Object} [options] An options object containing:
    *   @param {Object} [options.args] Arguments for the field.
    *   @param {String} [options.alias] An alias for the field.
+   *   @param {Object} [options.directives] Directives for the field.
    * @param {SelectionSet} selectionSet The selection set on the field.
    */
   function Field(name, options, selectionSet) {
@@ -506,6 +527,7 @@ var Field = function () {
     this.alias = options.alias || null;
     this.responseKey = this.alias || this.name;
     this.args = options.args ? deepFreezeCopyExcept(isVariable, options.args) : emptyArgs;
+    this.directives = options.directives ? deepFreezeCopyExcept(isVariable, options.directives) : emptyDirectives;
     this.selectionSet = selectionSet;
     Object.freeze(this);
   }
@@ -521,7 +543,7 @@ var Field = function () {
     value: function toString() {
       var aliasPrefix = this.alias ? this.alias + ': ' : '';
 
-      return '' + aliasPrefix + this.name + formatArgs(this.args) + this.selectionSet;
+      return '' + aliasPrefix + this.name + formatArgs(this.args) + formatDirectives(this.directives) + this.selectionSet;
     }
   }]);
   return Field;
@@ -1531,8 +1553,12 @@ function initializeDocumentAndVars(currentContext, contextChain) {
   });
 
   if (!firstVar) {
-    firstVar = variable('first', 'Int', first);
-    variableDefinitions.push(firstVar);
+    if (isVariable(first)) {
+      firstVar = first;
+    } else {
+      firstVar = variable('first', 'Int', first);
+      variableDefinitions.push(firstVar);
+    }
   }
 
   var document = new Document(currentContext.selection.selectionSet.typeBundle);
@@ -1797,11 +1823,15 @@ function transformScalars(context, value) {
 }
 
 function recordTypeInformation(context, value) {
+  var _context$selection$se = context.selection.selectionSet,
+      typeBundle = _context$selection$se.typeBundle,
+      typeSchema = _context$selection$se.typeSchema;
+
   if (isValue(value)) {
     if (value.__typename) {
-      value.type = schemaForType(context.selection.selectionSet.typeBundle, value.__typename);
+      value.type = schemaForType(typeBundle, value.__typename, typeSchema);
     } else {
-      value.type = context.selection.selectionSet.typeSchema;
+      value.type = typeSchema;
     }
   }
 
@@ -1838,7 +1868,7 @@ function decode(selection, responseData) {
 function httpFetcher(url) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  return function fetcher(graphQLParams) {
+  return function fetcher(graphQLParams, headers) {
     return fetch(url, _extends({
       body: JSON.stringify(graphQLParams),
       method: 'POST',
@@ -1847,9 +1877,17 @@ function httpFetcher(url) {
       headers: _extends({
         'Content-Type': 'application/json',
         Accept: 'application/json'
-      }, options.headers)
+      }, options.headers, headers)
     })).then(function (response) {
-      return response.json();
+      var contentType = response.headers.get('content-type');
+
+      if (contentType.indexOf('application/json') > -1) {
+        return response.json();
+      }
+
+      return response.text().then(function (text) {
+        return { text: text };
+      });
     });
   };
 }
@@ -1985,16 +2023,19 @@ var Client$2 = function () {
      * as a function, it must return `Query`, `Mutation`, or `Document` and recieve the client as the only param.
      * @param {Object} [variableValues] The values for variables in the operation or document.
      * @param {Object} [otherProperties] Other properties to send with the query. For example, a custom operation name.
+     * @param {Object} [headers] Additional headers to be applied on a request by request basis.
      * @return {Promise.<Object>} A promise resolving to an object containing the response data.
      */
 
   }, {
     key: 'send',
     value: function send(request) {
+      var variableValues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
       var _this = this;
 
-      var variableValues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var otherProperties = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+      var headers = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
       var operationOrDocument = void 0;
 
@@ -2030,7 +2071,7 @@ var Client$2 = function () {
         }
       }
 
-      return this.fetcher(graphQLParams).then(function (response) {
+      return this.fetcher(graphQLParams, headers).then(function (response) {
         if (response.data) {
           response.model = decode(operation, response.data, {
             classRegistry: _this.classRegistry,
@@ -2255,6 +2296,20 @@ var Config = function () {
         throw new Error('new Config() requires the option \'' + key + '\'');
       }
     });
+
+    if (attrs.hasOwnProperty('apiVersion')) {
+      this.apiVersion = attrs.apiVersion;
+    } else {
+      this.apiVersion = '2020-01';
+    }
+
+    if (attrs.hasOwnProperty('source')) {
+      this.source = attrs.source;
+    }
+
+    if (attrs.hasOwnProperty('language')) {
+      this.language = attrs.language;
+    }
   }
 
   return Config;
@@ -2297,6 +2352,12 @@ function fetchResourcesForProducts(productOrProduct, client) {
   var products = [].concat(productOrProduct);
 
   return Promise.all(products.reduce(function (promiseAcc, product) {
+
+    // If the graphql query doesn't find a match, skip fetching variants and images.
+    if (product === null) {
+      return promiseAcc;
+    }
+
     // Fetch the rest of the images and variants for this product
     promiseAcc.push(client.fetchAllPages(product.images, { pageSize: 250 }).then(function (images) {
       product.attrs.images = images;
@@ -2339,7 +2400,7 @@ var productHelpers = {
    * Returns the variant of a product corresponding to the options given.
    *
    * @example
-   * const selectedVariant = client.product.variantForOptions(product, {
+   * const selectedVariant = client.product.helpers.variantForOptions(product, {
    *   size: "Small",
    *   color: "Red"
    * });
@@ -2369,12 +2430,42 @@ function query(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -2385,6 +2476,17 @@ function query(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -2461,12 +2563,42 @@ function query$1(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -2477,6 +2609,17 @@ function query$1(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -2556,12 +2699,42 @@ function query$2(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -2572,6 +2745,17 @@ function query$2(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -2660,12 +2844,42 @@ function query$3(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -2676,6 +2890,17 @@ function query$3(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -2915,16 +3140,47 @@ function query$5(client) {
   var variables = {};
   variables.__defaultOperation__ = {};
   variables.__defaultOperation__.id = client.variable("id", "ID!");
+  variables.__defaultOperation__.productsFirst = client.variable("productsFirst", "Int!");
   spreads.VariantFragment = document.defineFragment("VariantFragment", "ProductVariant", function (root) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -2935,6 +3191,32 @@ function query$5(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
+    });
+  });
+  spreads.CollectionFragment = document.defineFragment("CollectionFragment", "Collection", function (root) {
+    root.add("id");
+    root.add("handle");
+    root.add("description");
+    root.add("descriptionHtml");
+    root.add("updatedAt");
+    root.add("title");
+    root.add("image", function (image) {
+      image.add("id");
+      image.add("originalSrc", {
+        alias: "src"
+      });
+      image.add("altText");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -2989,47 +3271,31 @@ function query$5(client) {
       });
     });
   });
-  spreads.CollectionFragment = document.defineFragment("CollectionFragment", "Collection", function (root) {
-    root.add("id");
-    root.add("handle");
-    root.add("description");
-    root.add("descriptionHtml");
-    root.add("updatedAt");
-    root.add("title");
-    root.add("image", function (image) {
-      image.add("id");
-      image.add("originalSrc", {
-        alias: "src"
-      });
-      image.add("altText");
-    });
-  });
-  spreads.CollectionsProductsFragment = document.defineFragment("CollectionsProductsFragment", "Collection", function (root) {
-    root.add("products", {
-      args: {
-        first: 20
-      }
-    }, function (products) {
-      products.add("pageInfo", function (pageInfo) {
-        pageInfo.add("hasNextPage");
-        pageInfo.add("hasPreviousPage");
-      });
-      products.add("edges", function (edges) {
-        edges.add("cursor");
-        edges.add("node", function (node) {
-          node.addFragment(spreads.ProductFragment);
-        });
-      });
-    });
-  });
-  document.addQuery([variables.__defaultOperation__.id], function (root) {
+  document.addQuery([variables.__defaultOperation__.id, variables.__defaultOperation__.productsFirst], function (root) {
     root.add("node", {
       args: {
         id: variables.__defaultOperation__.id
       }
     }, function (node) {
       node.addFragment(spreads.CollectionFragment);
-      node.addFragment(spreads.CollectionsProductsFragment);
+      node.addInlineFragmentOn("Collection", function (Collection) {
+        Collection.add("products", {
+          args: {
+            first: variables.__defaultOperation__.productsFirst
+          }
+        }, function (products) {
+          products.add("pageInfo", function (pageInfo) {
+            pageInfo.add("hasNextPage");
+            pageInfo.add("hasPreviousPage");
+          });
+          products.add("edges", function (edges) {
+            edges.add("cursor");
+            edges.add("node", function (node) {
+              node.addFragment(spreads.ProductFragment);
+            });
+          });
+        });
+      });
     });
   });
   return document;
@@ -3097,12 +3363,42 @@ function query$7(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -3113,6 +3409,17 @@ function query$7(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.CollectionFragment = document.defineFragment("CollectionFragment", "Collection", function (root) {
@@ -3232,12 +3539,42 @@ function query$8(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -3248,6 +3585,17 @@ function query$8(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.ProductFragment = document.defineFragment("ProductFragment", "Product", function (root) {
@@ -3440,7 +3788,11 @@ var CollectionResource = function (_Resource) {
   }, {
     key: 'fetchWithProducts',
     value: function fetchWithProducts(id) {
-      return this.graphQLClient.send(query$5, { id: id }).then(defaultResolver('node')).then(paginateCollectionsProductConnectionsAndResolve(this.graphQLClient));
+      var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+          _ref2$productsFirst = _ref2.productsFirst,
+          productsFirst = _ref2$productsFirst === undefined ? 20 : _ref2$productsFirst;
+
+      return this.graphQLClient.send(query$5, { id: id, productsFirst: productsFirst }).then(defaultResolver('node')).then(paginateCollectionsProductConnectionsAndResolve(this.graphQLClient));
     }
 
     /**
@@ -3481,13 +3833,13 @@ var CollectionResource = function (_Resource) {
   }, {
     key: 'fetchQuery',
     value: function fetchQuery() {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref2$first = _ref2.first,
-          first = _ref2$first === undefined ? 20 : _ref2$first,
-          _ref2$sortKey = _ref2.sortKey,
-          sortKey = _ref2$sortKey === undefined ? 'ID' : _ref2$sortKey,
-          query = _ref2.query,
-          reverse = _ref2.reverse;
+      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref3$first = _ref3.first,
+          first = _ref3$first === undefined ? 20 : _ref3$first,
+          _ref3$sortKey = _ref3.sortKey,
+          sortKey = _ref3$sortKey === undefined ? 'ID' : _ref3$sortKey,
+          query = _ref3.query,
+          reverse = _ref3.reverse;
 
       return this.graphQLClient.send(query$6, {
         first: first,
@@ -3505,6 +3857,9 @@ function query$9(client) {
   document.addQuery(function (root) {
     root.add("shop", function (shop) {
       shop.add("currencyCode");
+      shop.add("paymentSettings", function (paymentSettings) {
+        paymentSettings.add("enabledPresentmentCurrencies");
+      });
       shop.add("description");
       shop.add("moneyFormat");
       shop.add("name");
@@ -3641,12 +3996,42 @@ function query$11(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -3657,6 +4042,17 @@ function query$11(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -3682,6 +4078,7 @@ function query$11(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
@@ -3725,14 +4122,34 @@ function query$11(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -3758,6 +4175,10 @@ function query$11(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -3769,11 +4190,31 @@ function query$11(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -3860,12 +4301,42 @@ function query$12(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -3877,11 +4348,23 @@ function query$12(client) {
       selectedOptions.add("name");
       selectedOptions.add("value");
     });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
+    });
   });
   spreads.VariantWithProductFragment = document.defineFragment("VariantWithProductFragment", "ProductVariant", function (root) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
@@ -4020,12 +4503,42 @@ function query$13(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -4036,6 +4549,17 @@ function query$13(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -4061,6 +4585,7 @@ function query$13(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -4113,14 +4638,34 @@ function query$13(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -4146,6 +4691,10 @@ function query$13(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -4157,11 +4706,31 @@ function query$13(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -4257,12 +4826,42 @@ function query$14(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -4273,6 +4872,17 @@ function query$14(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -4298,11 +4908,17 @@ function query$14(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
     root.add("field");
     root.add("message");
+  });
+  spreads.CheckoutUserErrorFragment = document.defineFragment("CheckoutUserErrorFragment", "CheckoutUserError", function (root) {
+    root.add("field");
+    root.add("message");
+    root.add("code");
   });
   spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
     root.add("id");
@@ -4345,14 +4961,34 @@ function query$14(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -4378,6 +5014,10 @@ function query$14(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -4389,11 +5029,31 @@ function query$14(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -4468,6 +5128,9 @@ function query$14(client) {
       checkoutLineItemsAdd.add("userErrors", function (userErrors) {
         userErrors.addFragment(spreads.UserErrorFragment);
       });
+      checkoutLineItemsAdd.add("checkoutUserErrors", function (checkoutUserErrors) {
+        checkoutUserErrors.addFragment(spreads.CheckoutUserErrorFragment);
+      });
       checkoutLineItemsAdd.add("checkout", function (checkout) {
         checkout.addFragment(spreads.CheckoutFragment);
       });
@@ -4487,12 +5150,42 @@ function query$15(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -4503,6 +5196,17 @@ function query$15(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -4528,11 +5232,17 @@ function query$15(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
     root.add("field");
     root.add("message");
+  });
+  spreads.CheckoutUserErrorFragment = document.defineFragment("CheckoutUserErrorFragment", "CheckoutUserError", function (root) {
+    root.add("field");
+    root.add("message");
+    root.add("code");
   });
   spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
     root.add("id");
@@ -4575,14 +5285,34 @@ function query$15(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -4608,6 +5338,10 @@ function query$15(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -4619,11 +5353,31 @@ function query$15(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -4698,6 +5452,9 @@ function query$15(client) {
       checkoutLineItemsRemove.add("userErrors", function (userErrors) {
         userErrors.addFragment(spreads.UserErrorFragment);
       });
+      checkoutLineItemsRemove.add("checkoutUserErrors", function (checkoutUserErrors) {
+        checkoutUserErrors.addFragment(spreads.CheckoutUserErrorFragment);
+      });
       checkoutLineItemsRemove.add("checkout", function (checkout) {
         checkout.addFragment(spreads.CheckoutFragment);
       });
@@ -4717,12 +5474,42 @@ function query$16(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -4733,6 +5520,17 @@ function query$16(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -4758,6 +5556,7 @@ function query$16(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -4805,14 +5604,34 @@ function query$16(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -4838,6 +5657,10 @@ function query$16(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -4849,11 +5672,31 @@ function query$16(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -4947,12 +5790,42 @@ function query$17(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -4963,6 +5836,17 @@ function query$17(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -4988,11 +5872,17 @@ function query$17(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
     root.add("field");
     root.add("message");
+  });
+  spreads.CheckoutUserErrorFragment = document.defineFragment("CheckoutUserErrorFragment", "CheckoutUserError", function (root) {
+    root.add("field");
+    root.add("message");
+    root.add("code");
   });
   spreads.MailingAddressFragment = document.defineFragment("MailingAddressFragment", "MailingAddress", function (root) {
     root.add("id");
@@ -5035,14 +5925,34 @@ function query$17(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -5068,6 +5978,10 @@ function query$17(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -5079,11 +5993,31 @@ function query$17(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -5158,6 +6092,9 @@ function query$17(client) {
       checkoutLineItemsUpdate.add("userErrors", function (userErrors) {
         userErrors.addFragment(spreads.UserErrorFragment);
       });
+      checkoutLineItemsUpdate.add("checkoutUserErrors", function (checkoutUserErrors) {
+        checkoutUserErrors.addFragment(spreads.CheckoutUserErrorFragment);
+      });
       checkoutLineItemsUpdate.add("checkout", function (checkout) {
         checkout.addFragment(spreads.CheckoutFragment);
       });
@@ -5177,12 +6114,42 @@ function query$18(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -5193,6 +6160,17 @@ function query$18(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -5218,6 +6196,7 @@ function query$18(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -5270,14 +6249,34 @@ function query$18(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -5303,6 +6302,10 @@ function query$18(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -5314,11 +6317,31 @@ function query$18(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -5415,12 +6438,42 @@ function query$19(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -5431,6 +6484,17 @@ function query$19(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -5456,6 +6520,7 @@ function query$19(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -5508,14 +6573,34 @@ function query$19(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -5541,6 +6626,10 @@ function query$19(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -5552,11 +6641,31 @@ function query$19(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -5652,12 +6761,42 @@ function query$20(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -5668,6 +6807,17 @@ function query$20(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -5693,6 +6843,7 @@ function query$20(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -5745,14 +6896,34 @@ function query$20(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -5778,6 +6949,10 @@ function query$20(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -5789,11 +6964,31 @@ function query$20(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -5889,12 +7084,42 @@ function query$21(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -5905,6 +7130,17 @@ function query$21(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -5930,6 +7166,7 @@ function query$21(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -5982,14 +7219,34 @@ function query$21(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -6015,6 +7272,10 @@ function query$21(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -6026,11 +7287,31 @@ function query$21(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -6127,12 +7408,42 @@ function query$22(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -6143,6 +7454,17 @@ function query$22(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -6168,6 +7490,7 @@ function query$22(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -6215,14 +7538,34 @@ function query$22(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -6248,6 +7591,10 @@ function query$22(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -6259,11 +7606,31 @@ function query$22(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -6357,12 +7724,42 @@ function query$23(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -6373,6 +7770,17 @@ function query$23(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -6398,6 +7806,7 @@ function query$23(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -6445,14 +7854,34 @@ function query$23(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -6478,6 +7907,10 @@ function query$23(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -6489,11 +7922,31 @@ function query$23(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -6587,12 +8040,42 @@ function query$24(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -6603,6 +8086,17 @@ function query$24(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -6628,6 +8122,7 @@ function query$24(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -6675,14 +8170,34 @@ function query$24(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -6708,6 +8223,10 @@ function query$24(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -6719,11 +8238,31 @@ function query$24(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -6817,12 +8356,42 @@ function query$25(client) {
     root.add("id");
     root.add("title");
     root.add("price");
+    root.add("priceV2", function (priceV2) {
+      priceV2.add("amount");
+      priceV2.add("currencyCode");
+    });
+    root.add("presentmentPrices", {
+      args: {
+        first: 20
+      }
+    }, function (presentmentPrices) {
+      presentmentPrices.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      presentmentPrices.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.add("price", function (price) {
+            price.add("amount");
+            price.add("currencyCode");
+          });
+          node.add("compareAtPrice", function (compareAtPrice) {
+            compareAtPrice.add("amount");
+            compareAtPrice.add("currencyCode");
+          });
+        });
+      });
+    });
     root.add("weight");
     root.add("availableForSale", {
       alias: "available"
     });
     root.add("sku");
     root.add("compareAtPrice");
+    root.add("compareAtPriceV2", function (compareAtPriceV2) {
+      compareAtPriceV2.add("amount");
+      compareAtPriceV2.add("currencyCode");
+    });
     root.add("image", function (image) {
       image.add("id");
       image.add("originalSrc", {
@@ -6833,6 +8402,17 @@ function query$25(client) {
     root.add("selectedOptions", function (selectedOptions) {
       selectedOptions.add("name");
       selectedOptions.add("value");
+    });
+    root.add("unitPrice", function (unitPrice) {
+      unitPrice.add("amount");
+      unitPrice.add("currencyCode");
+    });
+    root.add("unitPriceMeasurement", function (unitPriceMeasurement) {
+      unitPriceMeasurement.add("measuredType");
+      unitPriceMeasurement.add("quantityUnit");
+      unitPriceMeasurement.add("quantityValue");
+      unitPriceMeasurement.add("referenceUnit");
+      unitPriceMeasurement.add("referenceValue");
     });
   });
   spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
@@ -6858,6 +8438,7 @@ function query$25(client) {
     root.addFragment(spreads.VariantFragment);
     root.add("product", function (product) {
       product.add("id");
+      product.add("handle");
     });
   });
   spreads.UserErrorFragment = document.defineFragment("UserErrorFragment", "UserError", function (root) {
@@ -6905,14 +8486,34 @@ function query$25(client) {
     });
     root.add("note");
     root.add("paymentDue");
+    root.add("paymentDueV2", function (paymentDueV2) {
+      paymentDueV2.add("amount");
+      paymentDueV2.add("currencyCode");
+    });
     root.add("webUrl");
     root.add("orderStatusUrl");
     root.add("taxExempt");
     root.add("taxesIncluded");
     root.add("currencyCode");
     root.add("totalTax");
+    root.add("totalTaxV2", function (totalTaxV2) {
+      totalTaxV2.add("amount");
+      totalTaxV2.add("currencyCode");
+    });
+    root.add("lineItemsSubtotalPrice", function (lineItemsSubtotalPrice) {
+      lineItemsSubtotalPrice.add("amount");
+      lineItemsSubtotalPrice.add("currencyCode");
+    });
     root.add("subtotalPrice");
+    root.add("subtotalPriceV2", function (subtotalPriceV2) {
+      subtotalPriceV2.add("amount");
+      subtotalPriceV2.add("currencyCode");
+    });
     root.add("totalPrice");
+    root.add("totalPriceV2", function (totalPriceV2) {
+      totalPriceV2.add("amount");
+      totalPriceV2.add("currencyCode");
+    });
     root.add("completedAt");
     root.add("createdAt");
     root.add("updatedAt");
@@ -6938,6 +8539,10 @@ function query$25(client) {
     root.add("shippingLine", function (shippingLine) {
       shippingLine.add("handle");
       shippingLine.add("price");
+      shippingLine.add("priceV2", function (priceV2) {
+        priceV2.add("amount");
+        priceV2.add("currencyCode");
+      });
       shippingLine.add("title");
     });
     root.add("customAttributes", function (customAttributes) {
@@ -6949,11 +8554,31 @@ function query$25(client) {
       order.add("processedAt");
       order.add("orderNumber");
       order.add("subtotalPrice");
+      order.add("subtotalPriceV2", function (subtotalPriceV2) {
+        subtotalPriceV2.add("amount");
+        subtotalPriceV2.add("currencyCode");
+      });
       order.add("totalShippingPrice");
+      order.add("totalShippingPriceV2", function (totalShippingPriceV2) {
+        totalShippingPriceV2.add("amount");
+        totalShippingPriceV2.add("currencyCode");
+      });
       order.add("totalTax");
+      order.add("totalTaxV2", function (totalTaxV2) {
+        totalTaxV2.add("amount");
+        totalTaxV2.add("currencyCode");
+      });
       order.add("totalPrice");
+      order.add("totalPriceV2", function (totalPriceV2) {
+        totalPriceV2.add("amount");
+        totalPriceV2.add("currencyCode");
+      });
       order.add("currencyCode");
       order.add("totalRefunded");
+      order.add("totalRefundedV2", function (totalRefundedV2) {
+        totalRefundedV2.add("amount");
+        totalRefundedV2.add("currencyCode");
+      });
       order.add("customerUrl");
       order.add("shippingAddress", function (shippingAddress) {
         shippingAddress.addFragment(spreads.MailingAddressFragment);
@@ -7147,10 +8772,11 @@ var CheckoutResource = function (_Resource) {
      *
      * @param {Object} [input] An input object containing zero or more of:
      *   @param {String} [input.email] An email connected to the checkout.
-     *   @param {Object[]} [input.lineItems] A list of line items in the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/checkoutlineiteminput|Storefront API reference} for valid input fields for each line item.
-     *   @param {Object} [input.shippingAddress] A shipping address. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/mailingaddressinput|Storefront API reference} for valid input fields.
+     *   @param {Object[]} [input.lineItems] A list of line items in the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/checkoutlineiteminput|Storefront API reference} for valid input fields for each line item.
+     *   @param {Object} [input.shippingAddress] A shipping address. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/mailingaddressinput|Storefront API reference} for valid input fields.
      *   @param {String} [input.note] A note for the checkout.
-     *   @param {Object[]} [input.customAttributes] A list of custom attributes for the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/attributeinput|Storefront API reference} for valid input fields.
+     *   @param {Object[]} [input.customAttributes] A list of custom attributes for the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/attributeinput|Storefront API reference} for valid input fields.
+     *   @param {String} [input.presentmentCurrencyCode ] A presentment currency code. See the {@link https://help.shopify.com/en/api/storefront-api/reference/enum/currencycode|Storefront API reference} for valid currency code values.
      * @return {Promise|GraphModel} A promise resolving with the created checkout.
      */
 
@@ -7176,7 +8802,7 @@ var CheckoutResource = function (_Resource) {
      * @param {String} checkoutId The ID of the checkout to update.
      * @param {Object} [input] An input object containing zero or more of:
      *   @param {Boolean} [input.allowPartialAddresses] An email connected to the checkout.
-     *   @param {Object[]} [input.customAttributes] A list of custom attributes for the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/attributeinput|Storefront API reference} for valid input fields.
+     *   @param {Object[]} [input.customAttributes] A list of custom attributes for the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/attributeinput|Storefront API reference} for valid input fields.
      *   @param {String} [input.note] A note for the checkout.
      * @return {Promise|GraphModel} A promise resolving with the updated checkout.
      */
@@ -7223,7 +8849,7 @@ var CheckoutResource = function (_Resource) {
      * });
      *
      * @param {String} checkoutId The ID of the checkout to add line items to.
-     * @param {Object[]} lineItems A list of line items to add to the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/checkoutlineiteminput|Storefront API reference} for valid input fields for each line item.
+     * @param {Object[]} lineItems A list of line items to add to the checkout. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/checkoutlineiteminput|Storefront API reference} for valid input fields for each line item.
      * @return {Promise|GraphModel} A promise resolving with the updated checkout.
      */
 
@@ -7382,7 +9008,7 @@ var CheckoutResource = function (_Resource) {
      * });
      *
      * @param {String} checkoutId The ID of the checkout to update a line item on.
-     * @param {Object[]} lineItems A list of line item information to update. See the {@link https://help.shopify.com/api/storefront-api/reference/input_object/checkoutlineitemupdateinput|Storefront API reference} for valid input fields for each line item.
+     * @param {Object[]} lineItems A list of line item information to update. See the {@link https://help.shopify.com/api/storefront-api/reference/input-object/checkoutlineitemupdateinput|Storefront API reference} for valid input fields for each line item.
      * @return {Promise|GraphModel} A promise resolving with the updated checkout.
      */
 
@@ -7547,7 +9173,7 @@ var Node = {
   "name": "Node",
   "kind": "INTERFACE",
   "fieldBaseTypes": {},
-  "possibleTypes": ["AppliedGiftCard", "Article", "Blog", "Checkout", "CheckoutLineItem", "Collection", "Comment", "MailingAddress", "Order", "Page", "Payment", "Product", "ProductOption", "ProductVariant", "ShopPolicy"]
+  "possibleTypes": ["AppliedGiftCard", "Article", "Blog", "Checkout", "CheckoutLineItem", "Collection", "Comment", "ExternalVideo", "MailingAddress", "MediaImage", "Metafield", "Model3d", "Order", "Page", "Payment", "Product", "ProductOption", "ProductVariant", "ShopPolicy", "Video"]
 };
 
 var ID = {
@@ -7623,16 +9249,36 @@ var Order = {
     "processedAt": "DateTime",
     "shippingAddress": "MailingAddress",
     "subtotalPrice": "Money",
+    "subtotalPriceV2": "MoneyV2",
     "totalPrice": "Money",
+    "totalPriceV2": "MoneyV2",
     "totalRefunded": "Money",
+    "totalRefundedV2": "MoneyV2",
     "totalShippingPrice": "Money",
-    "totalTax": "Money"
+    "totalShippingPriceV2": "MoneyV2",
+    "totalTax": "Money",
+    "totalTaxV2": "MoneyV2"
   },
   "implementsNode": true
 };
 
 var Money = {
   "name": "Money",
+  "kind": "SCALAR"
+};
+
+var MoneyV2 = {
+  "name": "MoneyV2",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "amount": "Decimal",
+    "currencyCode": "CurrencyCode"
+  },
+  "implementsNode": false
+};
+
+var Decimal = {
+  "name": "Decimal",
   "kind": "SCALAR"
 };
 
@@ -7654,21 +9300,6 @@ var DiscountAllocation = {
     "discountApplication": "DiscountApplication"
   },
   "implementsNode": false
-};
-
-var MoneyV2 = {
-  "name": "MoneyV2",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "amount": "Decimal",
-    "currencyCode": "CurrencyCode"
-  },
-  "implementsNode": false
-};
-
-var Decimal = {
-  "name": "Decimal",
-  "kind": "SCALAR"
 };
 
 var DiscountApplication = {
@@ -7695,47 +9326,6 @@ var DiscountApplicationTargetSelection = {
 var DiscountApplicationTargetType = {
   "name": "DiscountApplicationTargetType",
   "kind": "ENUM"
-};
-
-var DiscountApplication = {
-  "name": "DiscountApplication",
-  "kind": "INTERFACE",
-  "fieldBaseTypes": {
-    "allocationMethod": "DiscountApplicationAllocationMethod",
-    "targetSelection": "DiscountApplicationTargetSelection",
-    "targetType": "DiscountApplicationTargetType",
-    "value": "PricingValue"
-  },
-  "possibleTypes": ["AutomaticDiscountApplication", "DiscountCodeApplication", "ManualDiscountApplication", "ScriptDiscountApplication"]
-};
-
-var DiscountApplicationAllocationMethod = {
-  "name": "DiscountApplicationAllocationMethod",
-  "kind": "ENUM"
-};
-
-var DiscountApplicationTargetSelection = {
-  "name": "DiscountApplicationTargetSelection",
-  "kind": "ENUM"
-};
-
-var DiscountApplicationTargetType = {
-  "name": "DiscountApplicationTargetType",
-  "kind": "ENUM"
-};
-
-var PricingValue = {
-  "name": "PricingValue",
-  "kind": "UNION"
-};
-
-var PricingPercentageValue = {
-  "name": "PricingPercentageValue",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "percentage": "Float"
-  },
-  "implementsNode": false
 };
 
 var OrderLineItemConnection = {
@@ -7776,38 +9366,21 @@ var ProductVariant = {
   "fieldBaseTypes": {
     "availableForSale": "Boolean",
     "compareAtPrice": "Money",
+    "compareAtPriceV2": "MoneyV2",
     "id": "ID",
     "image": "Image",
+    "presentmentPrices": "ProductVariantPricePairConnection",
     "price": "Money",
+    "priceV2": "MoneyV2",
     "product": "Product",
     "selectedOptions": "SelectedOption",
     "sku": "String",
     "title": "String",
+    "unitPrice": "MoneyV2",
+    "unitPriceMeasurement": "UnitPriceMeasurement",
     "weight": "Float"
   },
   "implementsNode": true
-};
-
-var Image = {
-  "name": "Image",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "altText": "String",
-    "id": "ID",
-    "originalSrc": "URL",
-    "src": "URL"
-  },
-  "implementsNode": false
-};
-
-var SelectedOption = {
-  "name": "SelectedOption",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "name": "String",
-    "value": "String"
-  },
-  "implementsNode": false
 };
 
 var Product = {
@@ -7880,6 +9453,7 @@ var Image = {
   "fieldBaseTypes": {
     "altText": "String",
     "id": "ID",
+    "originalSrc": "URL",
     "src": "URL"
   },
   "implementsNode": false
@@ -7955,6 +9529,35 @@ var ProductVariantEdge = {
   "implementsNode": false
 };
 
+var ProductVariantPricePairConnection = {
+  "name": "ProductVariantPricePairConnection",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "edges": "ProductVariantPricePairEdge",
+    "pageInfo": "PageInfo"
+  },
+  "implementsNode": false
+};
+
+var ProductVariantPricePairEdge = {
+  "name": "ProductVariantPricePairEdge",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "node": "ProductVariantPricePair"
+  },
+  "implementsNode": false
+};
+
+var ProductVariantPricePair = {
+  "name": "ProductVariantPricePair",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "compareAtPrice": "MoneyV2",
+    "price": "MoneyV2"
+  },
+  "implementsNode": false
+};
+
 var SelectedOption = {
   "name": "SelectedOption",
   "kind": "OBJECT",
@@ -7963,6 +9566,29 @@ var SelectedOption = {
     "value": "String"
   },
   "implementsNode": false
+};
+
+var UnitPriceMeasurement = {
+  "name": "UnitPriceMeasurement",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "measuredType": "UnitPriceMeasurementMeasuredType",
+    "quantityUnit": "UnitPriceMeasurementMeasuredUnit",
+    "quantityValue": "Float",
+    "referenceUnit": "UnitPriceMeasurementMeasuredUnit",
+    "referenceValue": "Int"
+  },
+  "implementsNode": false
+};
+
+var UnitPriceMeasurementMeasuredType = {
+  "name": "UnitPriceMeasurementMeasuredType",
+  "kind": "ENUM"
+};
+
+var UnitPriceMeasurementMeasuredUnit = {
+  "name": "UnitPriceMeasurementMeasuredUnit",
+  "kind": "ENUM"
 };
 
 var Attribute = {
@@ -8008,19 +9634,24 @@ var Checkout = {
     "email": "String",
     "id": "ID",
     "lineItems": "CheckoutLineItemConnection",
+    "lineItemsSubtotalPrice": "MoneyV2",
     "note": "String",
     "order": "Order",
     "orderStatusUrl": "URL",
     "paymentDue": "Money",
+    "paymentDueV2": "MoneyV2",
     "ready": "Boolean",
     "requiresShipping": "Boolean",
     "shippingAddress": "MailingAddress",
     "shippingLine": "ShippingRate",
     "subtotalPrice": "Money",
+    "subtotalPriceV2": "MoneyV2",
     "taxExempt": "Boolean",
     "taxesIncluded": "Boolean",
     "totalPrice": "Money",
+    "totalPriceV2": "MoneyV2",
     "totalTax": "Money",
+    "totalTaxV2": "MoneyV2",
     "updatedAt": "DateTime",
     "webUrl": "URL"
   },
@@ -8067,6 +9698,7 @@ var ShippingRate = {
   "fieldBaseTypes": {
     "handle": "String",
     "price": "Money",
+    "priceV2": "MoneyV2",
     "title": "String"
   },
   "implementsNode": false
@@ -8087,9 +9719,12 @@ var AppliedGiftCard = {
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "amountUsed": "Money",
+    "amountUsedV2": "MoneyV2",
     "balance": "Money",
+    "balanceV2": "MoneyV2",
     "id": "ID",
-    "lastCharacters": "String"
+    "lastCharacters": "String",
+    "presentmentAmountUsed": "MoneyV2"
   },
   "implementsNode": true
 };
@@ -8102,10 +9737,20 @@ var Shop = {
     "description": "String",
     "moneyFormat": "String",
     "name": "String",
+    "paymentSettings": "PaymentSettings",
     "primaryDomain": "Domain",
     "privacyPolicy": "ShopPolicy",
     "refundPolicy": "ShopPolicy",
     "termsOfService": "ShopPolicy"
+  },
+  "implementsNode": false
+};
+
+var PaymentSettings = {
+  "name": "PaymentSettings",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "enabledPresentmentCurrencies": "CurrencyCode"
   },
   "implementsNode": false
 };
@@ -8150,6 +9795,7 @@ var Mutation$1 = {
     "checkoutLineItemsReplace": "CheckoutLineItemsReplacePayload",
     "checkoutLineItemsUpdate": "CheckoutLineItemsUpdatePayload",
     "checkoutShippingAddressUpdate": "CheckoutShippingAddressUpdatePayload",
+    "checkoutShippingAddressUpdateV2": "CheckoutShippingAddressUpdateV2Payload",
     "checkoutShippingLineUpdate": "CheckoutShippingLineUpdatePayload"
   },
   "implementsNode": false,
@@ -8174,6 +9820,22 @@ var UserError = {
   "implementsNode": false
 };
 
+var CheckoutUserError = {
+  "name": "CheckoutUserError",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "code": "CheckoutErrorCode",
+    "field": "String",
+    "message": "String"
+  },
+  "implementsNode": false
+};
+
+var CheckoutErrorCode = {
+  "name": "CheckoutErrorCode",
+  "kind": "ENUM"
+};
+
 var CheckoutShippingAddressUpdatePayload = {
   "name": "CheckoutShippingAddressUpdatePayload",
   "kind": "OBJECT",
@@ -8193,22 +9855,6 @@ var CheckoutAttributesUpdateV2Payload = {
     "userErrors": "UserError"
   },
   "implementsNode": false
-};
-
-var CheckoutUserError = {
-  "name": "CheckoutUserError",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "code": "CheckoutErrorCode",
-    "field": "String",
-    "message": "String"
-  },
-  "implementsNode": false
-};
-
-var CheckoutErrorCode = {
-  "name": "CheckoutErrorCode",
-  "kind": "ENUM"
 };
 
 var CheckoutCustomerDisassociateV2Payload = {
@@ -8290,55 +9936,30 @@ var CheckoutLineItemsAddPayload = {
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "checkout": "Checkout",
+    "checkoutUserErrors": "CheckoutUserError",
     "userErrors": "UserError"
   },
   "implementsNode": false
 };
 
-var CheckoutShippingLineUpdatePayload = {
-  "name": "CheckoutShippingLineUpdatePayload",
+var CheckoutLineItemsRemovePayload = {
+  "name": "CheckoutLineItemsRemovePayload",
   "kind": "OBJECT",
   "fieldBaseTypes": {
     "checkout": "Checkout",
+    "checkoutUserErrors": "CheckoutUserError",
     "userErrors": "UserError"
   },
   "implementsNode": false
 };
 
-var DiscountCodeApplication = {
-  "name": "DiscountCodeApplication",
+var CheckoutLineItemsUpdatePayload = {
+  "name": "CheckoutLineItemsUpdatePayload",
   "kind": "OBJECT",
   "fieldBaseTypes": {
-    "applicable": "Boolean",
-    "code": "String"
-  },
-  "implementsNode": false
-};
-
-var ManualDiscountApplication = {
-  "name": "ManualDiscountApplication",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "description": "String",
-    "title": "String"
-  },
-  "implementsNode": false
-};
-
-var ScriptDiscountApplication = {
-  "name": "ScriptDiscountApplication",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "description": "String"
-  },
-  "implementsNode": false
-};
-
-var AutomaticDiscountApplication = {
-  "name": "AutomaticDiscountApplication",
-  "kind": "OBJECT",
-  "fieldBaseTypes": {
-    "title": "String"
+    "checkout": "Checkout",
+    "checkoutUserErrors": "CheckoutUserError",
+    "userErrors": "UserError"
   },
   "implementsNode": false
 };
@@ -8349,6 +9970,17 @@ var CheckoutLineItemsReplacePayload = {
   "fieldBaseTypes": {
     "checkout": "Checkout",
     "userErrors": "CheckoutUserError"
+  },
+  "implementsNode": false
+};
+
+var CheckoutShippingAddressUpdateV2Payload = {
+  "name": "CheckoutShippingAddressUpdateV2Payload",
+  "kind": "OBJECT",
+  "fieldBaseTypes": {
+    "checkout": "Checkout",
+    "checkoutUserErrors": "CheckoutUserError",
+    "userErrors": "UserError"
   },
   "implementsNode": false
 };
@@ -8422,8 +10054,6 @@ Types.types["Decimal"] = Decimal;
 Types.types["CurrencyCode"] = CurrencyCode;
 Types.types["URL"] = URL;
 Types.types["DiscountAllocation"] = DiscountAllocation;
-Types.types["MoneyV2"] = MoneyV2;
-Types.types["Decimal"] = Decimal;
 Types.types["DiscountApplication"] = DiscountApplication;
 Types.types["DiscountApplicationAllocationMethod"] = DiscountApplicationAllocationMethod;
 Types.types["DiscountApplicationTargetSelection"] = DiscountApplicationTargetSelection;
@@ -8445,7 +10075,13 @@ Types.types["ImageEdge"] = ImageEdge;
 Types.types["ProductOption"] = ProductOption;
 Types.types["ProductVariantConnection"] = ProductVariantConnection;
 Types.types["ProductVariantEdge"] = ProductVariantEdge;
+Types.types["ProductVariantPricePairConnection"] = ProductVariantPricePairConnection;
+Types.types["ProductVariantPricePairEdge"] = ProductVariantPricePairEdge;
+Types.types["ProductVariantPricePair"] = ProductVariantPricePair;
 Types.types["SelectedOption"] = SelectedOption;
+Types.types["UnitPriceMeasurement"] = UnitPriceMeasurement;
+Types.types["UnitPriceMeasurementMeasuredType"] = UnitPriceMeasurementMeasuredType;
+Types.types["UnitPriceMeasurementMeasuredUnit"] = UnitPriceMeasurementMeasuredUnit;
 Types.types["Attribute"] = Attribute;
 Types.types["DiscountApplicationConnection"] = DiscountApplicationConnection;
 Types.types["DiscountApplicationEdge"] = DiscountApplicationEdge;
@@ -8457,14 +10093,15 @@ Types.types["ShippingRate"] = ShippingRate;
 Types.types["AvailableShippingRates"] = AvailableShippingRates;
 Types.types["AppliedGiftCard"] = AppliedGiftCard;
 Types.types["Shop"] = Shop;
+Types.types["PaymentSettings"] = PaymentSettings;
 Types.types["Domain"] = Domain;
 Types.types["ShopPolicy"] = ShopPolicy;
 Types.types["Mutation"] = Mutation$1;
 Types.types["UserError"] = UserError;
-Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
-Types.types["CheckoutAttributesUpdateV2Payload"] = CheckoutAttributesUpdateV2Payload;
 Types.types["CheckoutUserError"] = CheckoutUserError;
 Types.types["CheckoutErrorCode"] = CheckoutErrorCode;
+Types.types["CheckoutShippingAddressUpdatePayload"] = CheckoutShippingAddressUpdatePayload;
+Types.types["CheckoutAttributesUpdateV2Payload"] = CheckoutAttributesUpdateV2Payload;
 Types.types["CheckoutCustomerDisassociateV2Payload"] = CheckoutCustomerDisassociateV2Payload;
 Types.types["CheckoutDiscountCodeApplyV2Payload"] = CheckoutDiscountCodeApplyV2Payload;
 Types.types["CheckoutCreatePayload"] = CheckoutCreatePayload;
@@ -8476,6 +10113,7 @@ Types.types["CheckoutLineItemsAddPayload"] = CheckoutLineItemsAddPayload;
 Types.types["CheckoutLineItemsRemovePayload"] = CheckoutLineItemsRemovePayload;
 Types.types["CheckoutLineItemsUpdatePayload"] = CheckoutLineItemsUpdatePayload;
 Types.types["CheckoutLineItemsReplacePayload"] = CheckoutLineItemsReplacePayload;
+Types.types["CheckoutShippingAddressUpdateV2Payload"] = CheckoutShippingAddressUpdateV2Payload;
 Types.types["CheckoutShippingLineUpdatePayload"] = CheckoutShippingLineUpdatePayload;
 Types.types["DiscountCodeApplication"] = DiscountCodeApplication;
 Types.types["ManualDiscountApplication"] = ManualDiscountApplication;
@@ -8539,13 +10177,21 @@ var Client = function () {
     var fetchFunction = arguments[2];
     classCallCheck$1(this, Client);
 
-    var url = 'https://' + config.domain + '/api/graphql';
+    var url = 'https://' + config.domain + '/api/' + config.apiVersion + '/graphql';
 
     var headers = {
       'X-SDK-Variant': 'javascript',
       'X-SDK-Version': version,
       'X-Shopify-Storefront-Access-Token': config.storefrontAccessToken
     };
+
+    if (config.source) {
+      headers['X-SDK-Variant-Source'] = config.source;
+    }
+
+    if (config.language) {
+      headers['Accept-Language'] = config.language;
+    }
 
     if (fetchFunction) {
       headers['Content-Type'] = 'application/json';
