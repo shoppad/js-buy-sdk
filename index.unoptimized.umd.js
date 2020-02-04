@@ -4386,10 +4386,60 @@ function query$12(client) {
     root.add("countryCode");
     root.add("provinceCode");
   });
+  spreads.DiscountApplicationFragment = document.defineFragment("DiscountApplicationFragment", "DiscountApplication", function (root) {
+    root.add("targetSelection");
+    root.add("allocationMethod");
+    root.add("targetType");
+    root.add("value", function (value) {
+      value.addInlineFragmentOn("MoneyV2", function (MoneyV2) {
+        MoneyV2.add("amount");
+        MoneyV2.add("currencyCode");
+      });
+      value.addInlineFragmentOn("PricingPercentageValue", function (PricingPercentageValue) {
+        PricingPercentageValue.add("percentage");
+      });
+    });
+    root.addInlineFragmentOn("ManualDiscountApplication", function (ManualDiscountApplication) {
+      ManualDiscountApplication.add("title");
+      ManualDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("DiscountCodeApplication", function (DiscountCodeApplication) {
+      DiscountCodeApplication.add("code");
+      DiscountCodeApplication.add("applicable");
+    });
+    root.addInlineFragmentOn("ScriptDiscountApplication", function (ScriptDiscountApplication) {
+      ScriptDiscountApplication.add("description");
+    });
+    root.addInlineFragmentOn("AutomaticDiscountApplication", function (AutomaticDiscountApplication) {
+      AutomaticDiscountApplication.add("title");
+    });
+  });
   spreads.CheckoutWithAddressFragment = document.defineFragment("CheckoutWithAddressFragment", "Checkout", function (root) {
     root.add("id");
     root.add("ready");
-    root.add("availableShippingRates");
+    root.add("availableShippingRates", function (availableShippingRates) {
+      availableShippingRates.add("ready");
+      availableShippingRates.add("shippingRates", function (shippingRates) {
+        shippingRates.add("handle");
+        shippingRates.add("price");
+        shippingRates.add("title");
+      });
+    });
+    root.add("discountApplications", {
+      args: {
+        first: 10
+      }
+    }, function (discountApplications) {
+      discountApplications.add("pageInfo", function (pageInfo) {
+        pageInfo.add("hasNextPage");
+        pageInfo.add("hasPreviousPage");
+      });
+      discountApplications.add("edges", function (edges) {
+        edges.add("node", function (node) {
+          node.addFragment(spreads.DiscountApplicationFragment);
+        });
+      });
+    });
     root.add("requiresShipping");
     root.add("note");
     root.add("paymentDue");
